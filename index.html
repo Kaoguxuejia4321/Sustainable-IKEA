@@ -1103,6 +1103,101 @@ nav {
   object-fit: contain;
   border-radius: 6px;
 }
+
+/* ── Cart & Checkout Styles ─────────────────────────────── */
+.ck-step {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #bbb;
+  padding: 6px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: all .3s;
+}
+.ck-step.active { color: #1a2e1a; background: #e8f5e8; }
+.ck-step.done   { color: #2d7a2d; }
+.ck-line { flex: 1; height: 1px; background: #e0e0e0; margin: 0 4px; }
+
+.ck-label {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 6px;
+}
+.ck-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border .2s;
+  box-sizing: border-box;
+  background: #fafafa;
+}
+.ck-input:focus { border-color: #1a2e1a; background: #fff; }
+
+.ck-radio-card {
+  display: block;
+  padding: 12px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s;
+  background: #fafafa;
+}
+.ck-radio-card:hover   { border-color: #1a2e1a; background: #f5fbf5; }
+.ck-radio-card.selected { border-color: #1a2e1a; background: #f0f7f0; }
+
+.cart-item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  animation: fadeSlide .25s ease;
+}
+.cart-item-row:last-child { border-bottom: none; }
+.cart-item-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #f5f5f5;
+}
+.cart-item-name { font-weight: 600; font-size: 13px; color: #1a2e1a; }
+.cart-item-badge { font-size: 10px; color: #666; margin-top: 2px; }
+.cart-item-price { font-family: 'Fraunces', serif; font-size: 16px; color: #1a2e1a; white-space: nowrap; }
+.cart-item-remove { background: none; border: none; cursor: pointer; color: #bbb; font-size: 16px; padding: 4px; transition: color .15s; }
+.cart-item-remove:hover { color: #e53e3e; }
+
+.review-item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+.review-item-row:last-child { border-bottom: none; }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes checkoutIn {
+  from { opacity: 0; transform: scale(.96) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+#checkoutBox { animation: checkoutIn .3s ease; }
+
 </style>
 </head>
 <body>
@@ -1674,7 +1769,7 @@ function renderPhase2(type) {
   document.querySelector('.pc-variant').textContent = cat.primaryVariant;
   document.querySelector('.pc-img img').src = cat.primaryImg;
   document.querySelector('.pc-img img').alt = cat.primaryName;
-  document.querySelector('.btn-cart').onclick = () => addCart(cat.primaryName + ' (New)', 7995);
+  document.querySelector('.btn-cart').onclick = () => addCart(cat.primaryName, cat.products[0]?.price||7995, 'New', document.querySelector('.pc-img img')?.src||'');
 
   // Update results header
   document.querySelector('.results-title').innerHTML = cat.resultTitle;
@@ -1745,7 +1840,7 @@ function renderPhase2(type) {
         ${isEco ? `<div class="cond-row">${condText}</div>` : `<div class="cond-row">Condition: <div class="cdots">${condDots(condLevel)}</div> ${condText}</div>`}
         <div class="ac-price-row">
           ${priceRow}
-          <button class="ac-add" onclick="addCart('${p.name} ${p.badge}',${p.price});event.stopPropagation()">+</button>
+          <button class="ac-add" onclick="addCart('${p.name}',${p.price},'${p.badge}','${p.img}');event.stopPropagation()">+</button>
         </div>
         ${stockRow}
       </div>`;
@@ -2272,13 +2367,6 @@ function toggleBd() {
 }
 
 // ── CART & TOAST ──────────────────────────────
-function addCart(name, price) {
-  cartCount++;
-  const b = document.getElementById('cartBadge');
-  b.style.display = 'flex';
-  b.textContent = cartCount;
-  showToast(`🛒 ${name} added to cart — ${price.toLocaleString()} kr`);
-}
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -2305,6 +2393,470 @@ function initCO2Observer() {
   }, { threshold: 0.2 });
   document.querySelectorAll('.co2-widget').forEach(w => obs.observe(w));
 }
+
+// ── Cart state ──────────────────────────────────────────────────────────
+let cartItems = [];
+let selectedDelivery = 'standard';
+let selectedPay = 'card';
+
+function addCart(name, price, badge, img) {
+  const category = (typeof reqs !== 'undefined' && reqs.type)
+    ? reqs.type.charAt(0).toUpperCase() + reqs.type.slice(1)
+    : 'Furniture';
+  const item = {
+    id: Date.now() + Math.random(),
+    name: name,
+    price: price,
+    badge: badge || 'New',
+    img: img || '',
+    category: category,
+    co2: Math.floor(Math.random() * 20 + 5),
+    saving: Math.floor(price * 0.3)
+  };
+  cartItems.push(item);
+  updateCartUI();
+  openCart();
+  showToast('🛒 ' + name + ' added to basket');
+}
+
+// ── Analytics: record order stats to shared storage ──────────────────
+async function recordOrderStats() {
+  try {
+    let stats = { orders:0, revenue:0, co2Saved:0, byCategory:{}, byType:{'Second-hand':0,'Refurbished':0,'Eco New':0}, history:[] };
+    try {
+      const existing = await window.storage.get('ikea-sustainable-stats', true);
+      if (existing) stats = JSON.parse(existing.value);
+    } catch(e) {}
+
+    stats.orders   = (stats.orders   || 0) + 1;
+    stats.revenue  = (stats.revenue  || 0) + cartItems.reduce((s,i) => s+i.price, 0);
+    stats.co2Saved = (stats.co2Saved || 0) + cartItems.reduce((s,i) => s+i.co2,   0);
+
+    cartItems.forEach(item => {
+      const cat  = item.category || 'Furniture';
+      const type = item.badge    || 'Eco New';
+      stats.byCategory[cat]  = (stats.byCategory[cat]  || 0) + 1;
+      stats.byType[type]     = (stats.byType[type]     || 0) + 1;
+    });
+
+    stats.history = stats.history || [];
+    stats.history.push({
+      ts: Date.now(),
+      items: cartItems.length,
+      total: cartItems.reduce((s,i) => s+i.price, 0),
+      categories: cartItems.map(i => i.category),
+      types: cartItems.map(i => i.badge)
+    });
+    if (stats.history.length > 50) stats.history = stats.history.slice(-50);
+
+    await window.storage.set('ikea-sustainable-stats', JSON.stringify(stats), true);
+    console.log('Stats recorded:', stats);
+  } catch(e) {
+    console.warn('Storage unavailable:', e.message);
+  }
+}
+
+function removeCartItem(id) {
+  cartItems = cartItems.filter(i => i.id !== id);
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const count  = cartItems.length;
+  const total  = cartItems.reduce((s, i) => s + i.price, 0);
+  const co2    = cartItems.reduce((s, i) => s + i.co2, 0);
+  const saving = cartItems.reduce((s, i) => s + i.saving, 0);
+
+  // Nav badge
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'flex' : 'none';
+  cartCount = count;
+
+  // Subtitle
+  document.getElementById('cartSubtitle').textContent = count + (count === 1 ? ' item' : ' items');
+
+  // Toggle empty / items view
+  document.getElementById('cartEmpty').style.display  = count === 0 ? 'flex' : 'none';
+  document.getElementById('cartItems').style.display  = count > 0  ? 'block' : 'none';
+  document.getElementById('cartFooter').style.display = count > 0  ? 'block' : 'none';
+  document.getElementById('cartEcoBar').style.display = count > 0  ? 'block' : 'none';
+
+  // Render items
+  const list = document.getElementById('cartItems');
+  list.innerHTML = cartItems.map(item => `
+    <div class="cart-item-row">
+      ${item.img ? `<img class="cart-item-img" src="${item.img}" alt="${item.name}">` : '<div class="cart-item-img" style="display:flex;align-items:center;justify-content:center;font-size:24px">🪑</div>'}
+      <div style="flex:1;min-width:0">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-badge">${item.badge}</div>
+      </div>
+      <div class="cart-item-price">${item.price.toLocaleString()} kr</div>
+      <button class="cart-item-remove" onclick="removeCartItem(${item.id})">✕</button>
+    </div>
+  `).join('');
+
+  // Total
+  document.getElementById('cartTotal').textContent = total.toLocaleString() + ' kr';
+
+  // Eco stats
+  document.getElementById('cartCo2Saved').textContent = co2 + ' kg';
+  document.getElementById('cartMoneySaved').textContent = saving.toLocaleString() + ' kr';
+}
+
+function openCart() {
+  const drawer  = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('cartOverlay');
+  overlay.style.display = 'block';
+  requestAnimationFrame(() => {
+    overlay.style.opacity = '1';
+    drawer.style.transform = 'translateX(0)';
+  });
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  const drawer  = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('cartOverlay');
+  drawer.style.transform = 'translateX(100%)';
+  overlay.style.opacity = '0';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 350);
+}
+
+// Wire up nav cart button
+document.addEventListener('DOMContentLoaded', () => {
+  const navCart = document.getElementById('navCart');
+  if (navCart) navCart.onclick = openCart;
+});
+
+// ── Checkout ────────────────────────────────────────────────────────────
+function openCheckout() {
+  closeCart();
+  setTimeout(() => {
+    // Pre-populate review
+    buildReview();
+    const modal = document.getElementById('checkoutModal');
+    modal.style.display = 'flex';
+    goStep(1);
+  }, 380);
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutModal').style.display = 'none';
+  document.body.style.overflow = '';
+  // If order was placed, clear cart
+  if (document.getElementById('ckPage4').style.display !== 'none') {
+    cartItems = [];
+    updateCartUI();
+  }
+}
+
+function goStep(n) {
+  [1,2,3,4].forEach(i => {
+    document.getElementById('ckPage' + i).style.display = i === n ? 'block' : 'none';
+    const stepEl = document.getElementById('ckStep' + i);
+    if (stepEl) {
+      stepEl.className = 'ck-step' + (i === n ? ' active' : i < n ? ' done' : '');
+    }
+  });
+  if (n === 3) buildReview();
+  document.getElementById('checkoutBox').scrollTop = 0;
+}
+
+function selectDelivery(el, val) {
+  selectedDelivery = val;
+  document.querySelectorAll('[id^="delivOpt"]').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectPay(el, val) {
+  selectedPay = val;
+  document.querySelectorAll('[id^="payOpt"]').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cardFields').style.display   = val === 'card'   ? 'block' : 'none';
+  document.getElementById('swishFields').style.display  = val === 'swish'  ? 'block' : 'none';
+  document.getElementById('klarnaFields').style.display = val === 'klarna' ? 'block' : 'none';
+}
+
+function buildReview() {
+  const total   = cartItems.reduce((s, i) => s + i.price, 0);
+  const co2     = cartItems.reduce((s, i) => s + i.co2, 0);
+  const saving  = cartItems.reduce((s, i) => s + i.saving, 0);
+  const name    = document.getElementById('ckName')?.value  || 'Customer';
+  const email   = document.getElementById('ckEmail')?.value || 'your email';
+  const street  = document.getElementById('ckStreet')?.value || '—';
+  const city    = document.getElementById('ckCity')?.value  || '—';
+
+  document.getElementById('reviewItems').innerHTML = cartItems.map(item => `
+    <div class="review-item-row">
+      ${item.img ? `<img style="width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0" src="${item.img}" alt="${item.name}">` : ''}
+      <div style="flex:1"><div style="font-weight:600">${item.name}</div><div style="color:#888;font-size:11px">${item.badge}</div></div>
+      <div style="font-family:'Fraunces',serif;font-size:16px">${item.price.toLocaleString()} kr</div>
+    </div>
+  `).join('');
+
+  const delivLabel = selectedDelivery === 'standard' ? '🚚 Home delivery · 5–7 working days' : '🏪 Click & collect · Ready in 2 days';
+  const payLabel   = selectedPay === 'card' ? '💳 Card payment' : selectedPay === 'swish' ? '📱 Swish' : '🅺 Klarna';
+
+  document.getElementById('reviewDelivery').innerHTML =
+    `<strong>${name}</strong><br>${street}, ${city}<br>${delivLabel}<br>${payLabel}`;
+
+  document.getElementById('reviewSubtotal').textContent = total.toLocaleString() + ' kr';
+  document.getElementById('reviewTotal').textContent    = total.toLocaleString() + ' kr';
+
+  document.getElementById('cartEcoReview').innerHTML =
+    `🌱 By choosing sustainable options you save approximately <strong>${co2} kg of CO₂</strong> and <strong>${saving.toLocaleString()} kr</strong> compared to buying everything new.`;
+}
+
+function placeOrder() {
+  const btn = event.target;
+  btn.textContent = 'Processing…';
+  btn.disabled = true;
+  setTimeout(() => {
+    const total  = cartItems.reduce((s, i) => s + i.price, 0);
+    const co2    = cartItems.reduce((s, i) => s + i.co2, 0);
+    const saving = cartItems.reduce((s, i) => s + i.saving, 0);
+    const email  = document.getElementById('ckEmail')?.value || '';
+    recordOrderStats();
+    const orderNum = 'SU-' + Math.floor(Math.random()*90000+10000);
+
+    document.getElementById('confirmOrderNum').textContent = 'Order ' + orderNum + ' · ' + new Date().toLocaleDateString('sv-SE');
+    document.getElementById('confirmEmail').textContent    = email || 'your email';
+    document.getElementById('confirmSummary').innerHTML    =
+      '✅ ' + cartItems.length + ' item' + (cartItems.length>1?'s':'') + ' · ' + total.toLocaleString() + ' kr total<br>' +
+      '🌱 ' + co2 + ' kg CO₂ saved vs buying new<br>' +
+      '💰 ' + saving.toLocaleString() + ' kr saved<br>' +
+      '♻️ ' + cartItems.filter(i=>i.badge?.includes('Second')).length + ' second-hand · ' +
+              cartItems.filter(i=>i.badge?.includes('Refurb')).length + ' refurbished · ' +
+              cartItems.filter(i=>i.badge?.includes('Eco')).length + ' eco new';
+
+    goStep(4);
+    document.getElementById('checkoutSteps').style.display = 'none';
+    btn.textContent = 'Place order 🌱';
+    btn.disabled = false;
+  }, 1600);
+}
+
+// Input formatters
+function formatCard(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.replace(/(\d{4})/g,'$1 ').trim();
+}
+function formatExpiry(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,4);
+  if (v.length >= 3) v = v.substring(0,2) + ' / ' + v.substring(2);
+  el.value = v;
+}
+
 </script>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- CART DRAWER                                                        -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div id="cartOverlay" onclick="closeCart()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;opacity:0;transition:opacity .3s"></div>
+
+<aside id="cartDrawer" style="position:fixed;top:0;right:0;height:100%;width:420px;max-width:100vw;background:#fff;z-index:1001;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.15)">
+
+  <!-- Header -->
+  <div style="padding:24px 24px 16px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div>
+      <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:400;color:#1a2e1a">Your basket</div>
+      <div id="cartSubtitle" style="font-size:12px;color:#6b7f6b;margin-top:2px">0 items</div>
+    </div>
+    <button onclick="closeCart()" style="background:none;border:none;cursor:pointer;font-size:22px;color:#666;padding:4px;line-height:1">✕</button>
+  </div>
+
+  <!-- Empty state -->
+  <div id="cartEmpty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#888;padding:40px">
+    <div style="font-size:48px">🛒</div>
+    <div style="font-family:'Fraunces',serif;font-size:18px;color:#333">Your basket is empty</div>
+    <div style="font-size:13px;text-align:center;line-height:1.5">Add items from the results to start your sustainable order</div>
+  </div>
+
+  <!-- Items list -->
+  <div id="cartItems" style="flex:1;overflow-y:auto;padding:16px 24px;display:none"></div>
+
+  <!-- Sustainability summary -->
+  <div id="cartEcoBar" style="display:none;margin:0 24px 4px;padding:12px 14px;background:#f0f7f0;border-radius:8px;border:1px solid #c8e6c8">
+    <div style="font-size:11px;font-weight:600;color:#2d5a2d;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🌱 Your sustainability impact</div>
+    <div style="display:flex;gap:20px">
+      <div><span id="cartCo2Saved" style="font-family:'Fraunces',serif;font-size:18px;color:#2d5a2d">0</span><span style="font-size:11px;color:#4a7a4a;margin-left:3px">kg CO₂ saved</span></div>
+      <div><span id="cartMoneySaved" style="font-family:'Fraunces',serif;font-size:18px;color:#2d5a2d">0</span><span style="font-size:11px;color:#4a7a4a;margin-left:3px">kr saved</span></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="cartFooter" style="display:none;padding:16px 24px 24px;border-top:1px solid #eee;flex-shrink:0">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+      <span style="font-size:13px;color:#666">Subtotal</span>
+      <span id="cartTotal" style="font-family:'Fraunces',serif;font-size:24px;font-weight:400">0 kr</span>
+    </div>
+    <div style="font-size:11px;color:#888;margin-bottom:16px">Free delivery on orders over 599 kr · 365-day returns</div>
+    <button onclick="openCheckout()" style="width:100%;background:#1a2e1a;color:#fff;border:none;padding:16px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s;letter-spacing:.3px" onmouseover="this.style.background='#2d4a2d'" onmouseout="this.style.background='#1a2e1a'">Proceed to checkout →</button>
+    <button onclick="closeCart()" style="width:100%;background:none;color:#555;border:1px solid #ddd;padding:12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;margin-top:8px">Continue shopping</button>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- CHECKOUT MODAL                                                     -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<div id="checkoutModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:center;justify-content:center;padding:20px">
+  <div id="checkoutBox" style="background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.3)">
+
+    <!-- Steps indicator -->
+    <div id="checkoutSteps" style="padding:24px 28px 0;display:flex;align-items:center;gap:0">
+      <div class="ck-step active" id="ckStep1">1&nbsp;Delivery</div>
+      <div class="ck-line"></div>
+      <div class="ck-step" id="ckStep2">2&nbsp;Payment</div>
+      <div class="ck-line"></div>
+      <div class="ck-step" id="ckStep3">3&nbsp;Review</div>
+    </div>
+
+    <!-- STEP 1: Delivery -->
+    <div id="ckPage1" style="padding:24px 28px 28px">
+      <div style="font-family:'Fraunces',serif;font-size:24px;margin-bottom:6px">Delivery details</div>
+      <div style="font-size:13px;color:#888;margin-bottom:24px">This is a prototype — no real data is stored</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="grid-column:1/-1">
+          <label class="ck-label">Full name</label>
+          <input class="ck-input" id="ckName" placeholder="Anna Lindqvist" type="text">
+        </div>
+        <div style="grid-column:1/-1">
+          <label class="ck-label">Email address</label>
+          <input class="ck-input" id="ckEmail" placeholder="anna@example.se" type="email">
+        </div>
+        <div>
+          <label class="ck-label">Street address</label>
+          <input class="ck-input" id="ckStreet" placeholder="Storgatan 12" type="text">
+        </div>
+        <div>
+          <label class="ck-label">Postcode & city</label>
+          <input class="ck-input" id="ckCity" placeholder="252 23 Helsingborg" type="text">
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <label class="ck-label">Delivery preference</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
+          <label class="ck-radio-card selected" id="delivOpt1" onclick="selectDelivery(this,'standard')">
+            <input type="radio" name="delivery" value="standard" checked style="display:none">
+            <div style="font-weight:600;font-size:13px">🚚 Home delivery</div>
+            <div style="font-size:11px;color:#666;margin-top:3px">5–7 working days · Free over 599 kr</div>
+          </label>
+          <label class="ck-radio-card" id="delivOpt2" onclick="selectDelivery(this,'click')">
+            <input type="radio" name="delivery" value="click" style="display:none">
+            <div style="font-weight:600;font-size:13px">🏪 Click & collect</div>
+            <div style="font-size:11px;color:#666;margin-top:3px">Ready in 2 days · Free</div>
+          </label>
+        </div>
+      </div>
+
+      <button onclick="goStep(2)" style="width:100%;margin-top:24px;background:#1a2e1a;color:#fff;border:none;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s" onmouseover="this.style.background='#2d4a2d'" onmouseout="this.style.background='#1a2e1a'">Continue to payment →</button>
+    </div>
+
+    <!-- STEP 2: Payment -->
+    <div id="ckPage2" style="padding:24px 28px 28px;display:none">
+      <div style="font-family:'Fraunces',serif;font-size:24px;margin-bottom:6px">Payment</div>
+      <div style="font-size:13px;color:#888;margin-bottom:24px">Prototype only — no real card details needed</div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px">
+        <label class="ck-radio-card selected" id="payOpt1" onclick="selectPay(this,'card')">
+          <div style="font-size:20px">💳</div>
+          <div style="font-weight:600;font-size:12px;margin-top:4px">Card</div>
+        </label>
+        <label class="ck-radio-card" id="payOpt2" onclick="selectPay(this,'swish')">
+          <div style="font-size:20px">📱</div>
+          <div style="font-weight:600;font-size:12px;margin-top:4px">Swish</div>
+        </label>
+        <label class="ck-radio-card" id="payOpt3" onclick="selectPay(this,'klarna')">
+          <div style="font-size:20px">🅺</div>
+          <div style="font-weight:600;font-size:12px;margin-top:4px">Klarna</div>
+        </label>
+      </div>
+
+      <div id="cardFields">
+        <div style="margin-bottom:14px">
+          <label class="ck-label">Card number</label>
+          <input class="ck-input" id="ckCard" placeholder="4242 4242 4242 4242" maxlength="19" oninput="formatCard(this)">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div>
+            <label class="ck-label">Expiry</label>
+            <input class="ck-input" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)">
+          </div>
+          <div>
+            <label class="ck-label">CVC</label>
+            <input class="ck-input" placeholder="•••" maxlength="3" type="password">
+          </div>
+        </div>
+      </div>
+
+      <div id="swishFields" style="display:none">
+        <label class="ck-label">Mobile number</label>
+        <input class="ck-input" placeholder="070 000 00 00">
+        <div style="font-size:12px;color:#888;margin-top:6px">A Swish notification will be sent to your phone</div>
+      </div>
+
+      <div id="klarnaFields" style="display:none;padding:16px;background:#fdf0ff;border-radius:8px;border:1px solid #e8c8f0">
+        <div style="font-size:13px;font-weight:600;color:#4a0072">Pay in 3 installments — interest free</div>
+        <div style="font-size:12px;color:#666;margin-top:4px">You'll be redirected to Klarna to complete payment</div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:24px">
+        <button onclick="goStep(1)" style="flex:1;background:#fff;color:#333;border:1px solid #ddd;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">← Back</button>
+        <button onclick="goStep(3)" style="flex:2;background:#1a2e1a;color:#fff;border:none;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s" onmouseover="this.style.background='#2d4a2d'" onmouseout="this.style.background='#1a2e1a'">Review order →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Review -->
+    <div id="ckPage3" style="padding:24px 28px 28px;display:none">
+      <div style="font-family:'Fraunces',serif;font-size:24px;margin-bottom:20px">Review your order</div>
+
+      <div id="reviewItems" style="border:1px solid #eee;border-radius:10px;overflow:hidden;margin-bottom:16px"></div>
+
+      <div id="reviewDelivery" style="padding:14px;background:#f8f8f6;border-radius:10px;margin-bottom:16px;font-size:13px;line-height:1.7"></div>
+
+      <div style="border-top:2px solid #1a2e1a;padding-top:16px;margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:13px;color:#666">Subtotal</span>
+          <span id="reviewSubtotal" style="font-size:13px;font-weight:600">0 kr</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:13px;color:#666">Delivery</span>
+          <span style="font-size:13px;color:#2d7a2d;font-weight:600">Free</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #eee">
+          <span style="font-weight:700">Total</span>
+          <span id="reviewTotal" style="font-family:'Fraunces',serif;font-size:22px;font-weight:400">0 kr</span>
+        </div>
+      </div>
+
+      <div id="cartEcoReview" style="padding:12px 14px;background:#f0f7f0;border-radius:8px;border:1px solid #c8e6c8;margin-bottom:20px;font-size:12px;color:#2d5a2d;line-height:1.6"></div>
+
+      <div style="display:flex;gap:10px">
+        <button onclick="goStep(2)" style="flex:1;background:#fff;color:#333;border:1px solid #ddd;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">← Back</button>
+        <button onclick="placeOrder()" style="flex:2;background:#1a2e1a;color:#fff;border:none;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s" onmouseover="this.style.background='#2d4a2d'" onmouseout="this.style.background='#1a2e1a'">Place order 🌱</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Confirmation -->
+    <div id="ckPage4" style="padding:40px 28px;display:none;text-align:center">
+      <div style="width:72px;height:72px;background:#f0f7f0;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px">🌱</div>
+      <div style="font-family:'Fraunces',serif;font-size:28px;margin-bottom:8px;color:#1a2e1a">Order placed!</div>
+      <div id="confirmOrderNum" style="font-size:13px;color:#888;margin-bottom:20px"></div>
+      <div id="confirmSummary" style="padding:16px;background:#f0f7f0;border-radius:10px;text-align:left;margin-bottom:20px;font-size:13px;line-height:1.8;color:#2d4a2d"></div>
+      <div style="font-size:13px;color:#666;line-height:1.6;margin-bottom:28px">A confirmation will be sent to <strong id="confirmEmail"></strong><br>Thank you for choosing sustainable furniture! 🌍</div>
+      <button onclick="closeCheckout()" style="width:100%;background:#1a2e1a;color:#fff;border:none;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">Back to shopping</button>
+    </div>
+
+    <!-- Close button -->
+    <button onclick="closeCheckout()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#888;z-index:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='none'">✕</button>
+  </div>
+</div>
+
 </body>
 </html>
