@@ -1069,12 +1069,112 @@ nav {
 
 /* RESPONSIVE */
 @media (max-width:900px) {
-  .p1-body { grid-template-columns:1fr; }
-  .req-col { display:none; }
-  .p2-layout { grid-template-columns:1fr; }
-  .p2-sidebar { position:static; height:auto; }
-  .primary-card { grid-template-columns:1fr; }
-  .alt-grid { grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); }
+
+  /* ── Phase 1 mobile: auto height, natural scroll ── */
+  #phase1 {
+    min-height: 100vh;
+    height: auto;
+    overflow-y: visible;
+  }
+
+  .p1-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    flex: none;
+    height: auto;
+  }
+
+  /* req-col goes ABOVE chat-col on mobile via order */
+  .req-col {
+    order: -1;
+    display: flex;
+    flex-direction: column;
+    max-height: none;
+    overflow-y: visible;
+    padding: 16px 16px 12px;
+    position: static;
+    background: rgba(255,255,255,0.04);
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-right: none;
+  }
+
+  /* Compact req grid on mobile */
+  .req-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  /* Hide the in-panel confirm btn on mobile (replaced by floating CTA) */
+  #confirmBtn { display: none; }
+
+  /* chat-col below req-col */
+  .chat-col {
+    order: 0;
+    padding: 16px 16px 80px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .chat-messages {
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  /* hero */
+  .p1-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 16px 16px;
+    gap: 16px;
+  }
+  .p1-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Phase 2 */
+  .p2-layout { grid-template-columns: 1fr; }
+  .p2-sidebar { position: static; height: auto; }
+  .primary-card { grid-template-columns: 1fr; }
+  .alt-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .p2-context { flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
+  .p2-filters { padding: 12px 16px; overflow-x: auto; }
+  .p2-tabs { flex-wrap: nowrap; overflow-x: auto; }
+}
+
+@media (max-width:600px) {
+  .p1-hero { padding: 16px 16px 0; }
+  .p1-title { font-size: clamp(18px, 5vw, 28px); }
+  .p1-stats { gap: 12px; flex-wrap: wrap; }
+  .p1-stat-num { font-size: 22px; }
+  .chips { flex-wrap: wrap; gap: 6px; }
+  .chip { font-size: 12px; padding: 7px 11px; }
+  .req-grid { grid-template-columns: 1fr 1fr; }
+  .alt-grid { grid-template-columns: 1fr 1fr; }
+  .ac-body { padding: 10px 12px 12px; }
+  /* Reduce req-col padding at 600px */
+  .req-col { padding: 14px 14px 10px; gap: 10px; }
+  .req-item { padding: 8px 10px; }
+  .req-item-val { font-size: 12px; }
+}
+
+@media (max-width:420px) {
+  .alt-grid { grid-template-columns: 1fr; }
+  .p1-stats { display: none; }
+  #cartDrawer { width: 100vw; }
+  .req-grid { grid-template-columns: 1fr 1fr; }
+  .req-item-label { font-size: 9px; }
+  .req-item-val { font-size: 11px; }
+  #mobileCta { padding: 10px 12px 18px; }
+}
+
+@media (max-width:480px) {
+  .p1-hero { padding: 20px 16px 16px; }
+  .p1-hero-text h1 { font-size: 24px; }
+  .p1-stats { gap: 12px; }
+  .alt-grid { grid-template-columns: 1fr 1fr; }
+  .chat-col { padding: 16px 12px 12px; }
 }
 
 /* Product images */
@@ -1297,7 +1397,7 @@ nav {
         </div>
       </div>
 
-      <div>
+      <div class="req-progress-section">
         <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
         <div class="progress-label">
           <span>Requirements filled</span>
@@ -1305,7 +1405,7 @@ nav {
         </div>
       </div>
 
-      <div class="preview-label">
+      <div class="preview-label mobile-hide">
         <div class="preview-dot"></div>
         Live results
       </div>
@@ -1997,6 +2097,7 @@ function sendMsg() {
     setChips(FLOW[currentStep]?.chips || []);
     if (currentStep >= 4) {
       document.getElementById('confirmBtn').classList.add('ready');
+      showMobileCta();
     }
   }, 500);
 }
@@ -2016,6 +2117,7 @@ function updateProgress() {
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressPct').textContent = `${filled} / 5`;
   if (filled >= 3) document.getElementById('confirmBtn').classList.add('ready');
+      showMobileCta();
 }
 
 function setMiniCardImg(mcId, src, alt) {
@@ -2063,6 +2165,7 @@ function updateMiniCards(s) {
 
 // ── PHASE TRANSITIONS ─────────────────────────
 function goToPhase2() {
+  hideMobileCta();
   // Build context pills (clear first to prevent duplicates on re-entry)
   const pills = document.getElementById('p2pills');
   pills.innerHTML = '';
@@ -2124,6 +2227,7 @@ function backToPhase1() {
   document.getElementById('progressFill').style.width = '0%';
   document.getElementById('progressPct').textContent = '0 / 5';
   document.getElementById('confirmBtn').classList.remove('ready');
+  hideMobileCta();
   document.getElementById('chatMessages').innerHTML = '';
   // Restore initial bot greeting
   addMsg('bot', "Hi! I'm your IKEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
@@ -2651,6 +2755,19 @@ function formatExpiry(el) {
   el.value = v;
 }
 
+
+function showMobileCta() {
+  if (window.innerWidth <= 900) {
+    document.getElementById('mobileCta').style.display = 'block';
+  }
+}
+function hideMobileCta() {
+  document.getElementById('mobileCta').style.display = 'none';
+}
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900) hideMobileCta();
+});
+
 </script>
 
 <!-- ══════════════════════════════════════════════════════════════════ -->
@@ -2856,6 +2973,14 @@ function formatExpiry(el) {
     <!-- Close button -->
     <button onclick="closeCheckout()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#888;z-index:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='none'">✕</button>
   </div>
+</div>
+
+
+<!-- Mobile sticky CTA (hidden on desktop, shown when 3+ reqs filled) -->
+<div id="mobileCta" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;padding:12px 16px 20px;background:linear-gradient(transparent,rgba(14,28,10,0.97) 30%);pointer-events:none">
+  <button onclick="goToPhase2()" id="mobileCtaBtn" style="width:100%;padding:16px;background:var(--yellow);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:var(--blue);cursor:pointer;pointer-events:all;letter-spacing:.2px;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
+    ✓ See full results
+  </button>
 </div>
 
 </body>
