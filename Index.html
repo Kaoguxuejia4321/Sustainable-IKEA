@@ -431,27 +431,7 @@ nav {
 .confirm-btn.ready { opacity:1; pointer-events:all; }
 .confirm-btn.ready:hover { background:white; transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.25); }
 
-/* ── CONSENT BANNER ─────────────────────────── */
-#consentBanner {
-  background:rgba(255,218,26,0.12);
-  border:1px solid rgba(255,218,26,0.25);
-  border-radius:8px;
-  padding:10px 14px;
-  font-size:11px;
-  color:rgba(255,255,255,0.7);
-  line-height:1.5;
-  display:none;
-}
-#consentBanner strong { color:rgba(255,218,26,0.9); }
-.consent-actions { display:flex; gap:8px; margin-top:8px; }
-.consent-btn {
-  padding:4px 12px; border-radius:4px; font-size:11px; font-weight:600;
-  cursor:pointer; border:none; font-family:'DM Sans',sans-serif;
-  transition:opacity 0.2s;
-}
-.consent-accept { background:var(--yellow); color:var(--blue); }
-.consent-decline { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.2); }
-.consent-btn:hover { opacity:0.85; }
+
 
 /* ── TRANSITION ─────────────────────────────── */
 #phase1.exiting { animation:slideUp 0.55s cubic-bezier(0.4,0,0.2,1) forwards; }
@@ -843,6 +823,55 @@ nav {
   .alt-grid { grid-template-columns:1fr 1fr; }
   .chat-col { padding:16px 12px 12px; }
 }
+
+/* Stats dashboard */
+.stat-card {
+  background:#f8f7f4;border-radius:12px;padding:18px 20px;margin-bottom:16px;
+}
+.stat-card-title {
+  font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#888;margin-bottom:4px;
+}
+.stat-card-value {
+  font-size:32px;font-weight:700;color:var(--blue);letter-spacing:-1px;
+}
+.stat-card-sub {
+  font-size:12px;color:#888;margin-top:2px;
+}
+.stat-grid {
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;
+}
+.stat-bar-row {
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.stat-bar-label {
+  width:96px;font-size:13px;color:#444;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.stat-bar-track {
+  flex:1;height:10px;background:#e8e6e0;border-radius:6px;overflow:hidden;
+}
+.stat-bar-fill {
+  height:100%;border-radius:6px;transition:width 0.6s ease;
+  background:linear-gradient(90deg,var(--blue),#4a90d9);
+}
+.stat-bar-count {
+  font-size:12px;font-weight:600;color:var(--blue);width:28px;text-align:right;flex-shrink:0;
+}
+.stat-section-title {
+  font-size:13px;font-weight:700;color:#222;margin:20px 0 10px;letter-spacing:-0.1px;
+}
+.stat-history-row {
+  display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0ede6;font-size:12px;
+}
+.stat-history-row:last-child { border-bottom:none; }
+.stat-dot { width:8px;height:8px;border-radius:50%;background:var(--blue);margin-top:4px;flex-shrink:0; }
+.stat-empty { text-align:center;padding:40px 0;color:#aaa; }
+.stat-refresh-btn {
+  display:flex;align-items:center;gap:6px;background:none;border:1px solid #ddd;
+  border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer;color:#555;
+  margin-left:auto;transition:background 0.15s;
+}
+.stat-refresh-btn:hover { background:#f0ede6; }
+
 </style>
 </head>
 <body>
@@ -871,6 +900,14 @@ nav {
   </ul>
   <button class="nav-cart" id="navCart" aria-label="Shopping cart, 0 items">
     🛒<span class="cart-badge" id="cartBadge" aria-hidden="true">0</span>
+  </button>
+  <button id="navStats" onclick="openStats()" aria-label="View checkout statistics"
+    style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:white;
+           height:34px;padding:0 14px;border-radius:17px;cursor:pointer;font-size:12px;font-weight:600;
+           display:flex;align-items:center;gap:6px;transition:background 0.2s;flex-shrink:0;font-family:inherit;letter-spacing:0.2px"
+    onmouseover="this.style.background='rgba(255,255,255,0.25)'"
+    onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+    📊 Statistics
   </button>
 </nav>
 
@@ -995,15 +1032,6 @@ nav {
             <div class="mini-card-sub">100% organic cotton · Net-zero</div>
           </div>
           <span class="mini-card-badge badge-eco">Eco</span>
-        </div>
-      </div>
-
-      <!-- Consent banner (shown before analytics writes) -->
-      <div id="consentBanner" role="alert" aria-label="Data sharing consent">
-        <strong>Share your order data?</strong> Anonymous usage statistics (product categories, CO₂ impact) help improve recommendations. No personal data is shared.
-        <div class="consent-actions">
-          <button class="consent-btn consent-accept" onclick="giveConsent(true)">Yes, share anonymously</button>
-          <button class="consent-btn consent-decline" onclick="giveConsent(false)">No thanks</button>
         </div>
       </div>
 
@@ -1411,7 +1439,7 @@ let activeMinPrice   = 0;
 let activeMaxPrice   = 999999;
 let activeSortVal    = 'eco';
 let activeMaterials  = new Set(['fsc','gots']); // default checked
-let userConsent      = null; // null=not asked, true=yes, false=no
+
 let aiReady          = false;
 
 // ═══════════════════════════════════════════
@@ -1670,7 +1698,6 @@ async function sendMsg() {
       document.getElementById('confirmBtn').classList.add('ready');
       document.getElementById('confirmBtn').removeAttribute('aria-disabled');
       showMobileCta();
-      document.getElementById('consentBanner').style.display = 'block';
     }
   } catch (err) {
     removeTyping();
@@ -1688,7 +1715,6 @@ async function sendMsg() {
       document.getElementById('confirmBtn').classList.add('ready');
       document.getElementById('confirmBtn').removeAttribute('aria-disabled');
       showMobileCta();
-      document.getElementById('consentBanner').style.display = 'block';
     }
   }
 
@@ -1738,15 +1764,6 @@ function updateMiniCards(s) {
     setMiniCardImg('mc3', cat.products[1].img, cat.products[1].name);
     setMiniCardImg('mc4', cat.products[6].img, cat.products[6].name);
   }
-}
-
-// ═══════════════════════════════════════════
-// CONSENT
-// ═══════════════════════════════════════════
-function giveConsent(choice) {
-  userConsent = choice;
-  document.getElementById('consentBanner').style.display = 'none';
-  announce(choice ? 'You agreed to share anonymous usage data.' : 'You declined data sharing. No analytics will be recorded.');
 }
 
 // ═══════════════════════════════════════════
@@ -1856,7 +1873,6 @@ function backToPhase1() {
   document.getElementById('confirmBtn').classList.remove('ready');
   document.getElementById('confirmBtn').setAttribute('aria-disabled','true');
   hideMobileCta();
-  document.getElementById('consentBanner').style.display = 'none';
   document.getElementById('chatMessages').innerHTML = '';
 
   addMsg('bot', "Hi! I'm your IKEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
@@ -2303,7 +2319,6 @@ function initCO2Observer() {
 // CART
 // ═══════════════════════════════════════════
 let selectedDelivery = 'standard';
-let selectedPay = 'card';
 
 function addCart(name, price, badge, img) {
   const item = {
@@ -2321,7 +2336,6 @@ function addCart(name, price, badge, img) {
 }
 
 async function recordOrderStats() {
-  if (!userConsent) return; // Respect consent decision
   try {
     let stats = { orders:0, revenue:0, co2Saved:0, byCategory:{}, byType:{}, history:[] };
     try {
@@ -2339,8 +2353,13 @@ async function recordOrderStats() {
     });
 
     stats.history = stats.history || [];
+    // Also track the search category as the primary checkout category
+    const checkoutCat = reqs.type || 'Furniture';
+    stats.byCheckoutCategory = stats.byCheckoutCategory || {};
+    stats.byCheckoutCategory[checkoutCat] = (stats.byCheckoutCategory[checkoutCat] || 0) + 1;
+
     stats.history.push({ ts:Date.now(), items:cartItems.length, total:cartItems.reduce((s,i)=>s+i.price,0), categories:cartItems.map(i=>i.category), types:cartItems.map(i=>i.badge) });
-    if (stats.history.length > 50) stats.history = stats.history.slice(-50);
+    if (stats.history.length > 200) stats.history = stats.history.slice(-200);
 
     await window.storage.set('ikea-sustainable-stats', JSON.stringify(stats), true);
   } catch(e) {
@@ -2452,12 +2471,9 @@ function selectDelivery(el, val) {
 }
 
 function selectPay(el, val) {
-  selectedPay = val;
+  // payment step removed
   document.querySelectorAll('[id^="payOpt"]').forEach(e => e.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('cardFields').style.display   = val==='card'   ? 'block' : 'none';
-  document.getElementById('swishFields').style.display  = val==='swish'  ? 'block' : 'none';
-  document.getElementById('klarnaFields').style.display = val==='klarna' ? 'block' : 'none';
 }
 
 function buildReview() {
@@ -2477,7 +2493,7 @@ function buildReview() {
     </div>`).join('');
 
   const delivLabel = selectedDelivery==='standard' ? '🚚 Home delivery · 5–7 working days' : '🏪 Click & collect · Ready in 2 days';
-  const payLabel   = selectedPay==='card' ? '💳 Card payment' : selectedPay==='swish' ? '📱 Swish' : '🅺 Klarna';
+  const payLabel   = '✓ Payment on delivery';
 
   document.getElementById('reviewDelivery').innerHTML = `<strong>${name}</strong><br>${street}, ${city}<br>${delivLabel}<br>${payLabel}`;
   document.getElementById('reviewSubtotal').textContent = total.toLocaleString() + ' kr';
@@ -2494,7 +2510,7 @@ function placeOrder() {
     const co2    = cartItems.reduce((s,i)=>s+i.co2,0);
     const saving = cartItems.reduce((s,i)=>s+i.saving,0);
     const email  = document.getElementById('ckEmail')?.value || '';
-    recordOrderStats(); // Respects userConsent
+    recordOrderStats();
     const orderNum = 'SU-' + Math.floor(Math.random()*90000+10000);
     document.getElementById('confirmOrderNum').textContent = 'Order ' + orderNum + ' · ' + new Date().toLocaleDateString('sv-SE');
     document.getElementById('confirmEmail').textContent    = email || 'your email';
@@ -2513,16 +2529,6 @@ function placeOrder() {
   }, 1600);
 }
 
-function formatCard(el) {
-  let v = el.value.replace(/\D/g,'').substring(0,16);
-  el.value = v.replace(/(\d{4})/g,'$1 ').trim();
-}
-
-function formatExpiry(el) {
-  let v = el.value.replace(/\D/g,'').substring(0,4);
-  if (v.length >= 3) v = v.substring(0,2) + ' / ' + v.substring(2);
-  el.value = v;
-}
 
 // ═══════════════════════════════════════════
 // TOAST & MOBILE CTA
@@ -2562,6 +2568,199 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load state from URL if present (shareable links)
   loadFromUrl();
 });
+
+// ═══════════════════════════════════════════
+// STATS DASHBOARD
+// ═══════════════════════════════════════════
+
+function openStats() {
+  const panel   = document.getElementById('statsPanel');
+  const overlay = document.getElementById('statsOverlay');
+  panel.style.display   = 'flex';
+  overlay.style.display = 'block';
+  panel.setAttribute('aria-hidden','false');
+  requestAnimationFrame(() => {
+    overlay.style.opacity = '1';
+    panel.style.transform = 'translateX(0)';
+  });
+  document.body.style.overflow = 'hidden';
+  loadStats();
+}
+
+function closeStats() {
+  const panel   = document.getElementById('statsPanel');
+  const overlay = document.getElementById('statsOverlay');
+  panel.style.transform = 'translateX(100%)';
+  overlay.style.opacity = '0';
+  panel.setAttribute('aria-hidden','true');
+  setTimeout(() => {
+    panel.style.display   = 'none';
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 300);
+  document.getElementById('navStats')?.focus();
+}
+
+async function loadStats() {
+  const el = document.getElementById('statsContent');
+  el.innerHTML = '<div style="text-align:center;padding:60px 0;color:#aaa"><div style="font-size:32px;margin-bottom:12px">⏳</div><div>Loading…</div></div>';
+
+  let stats = null;
+  try {
+    const raw = await window.storage.get('ikea-sustainable-stats', true);
+    if (raw) stats = JSON.parse(raw.value);
+  } catch(e) {}
+
+  if (!stats || stats.orders === 0) {
+    el.innerHTML = renderEmptyStats();
+    return;
+  }
+  el.innerHTML = renderStats(stats);
+}
+
+function renderEmptyStats() {
+  return `
+    <div class="stat-empty">
+      <div style="font-size:48px;margin-bottom:16px">📭</div>
+      <div style="font-size:16px;font-weight:600;color:#444;margin-bottom:8px">No data yet</div>
+      <div style="font-size:13px;color:#888;max-width:260px;margin:0 auto">
+        Statistics are recorded each time a user completes checkout and consents to anonymous data sharing.
+      </div>
+    </div>`;
+}
+
+function renderStats(stats) {
+  const categories = stats.byCategory || {};
+  const types      = stats.byType || {};
+  const history    = (stats.history || []).slice().reverse(); // newest first
+
+  // Category bars
+  const catEntries = Object.entries(categories).sort((a,b) => b[1]-a[1]);
+  const catMax     = catEntries[0]?.[1] || 1;
+
+  // Type (badge) bars — normalize names
+  const typeEntries = Object.entries(types).sort((a,b) => b[1]-a[1]);
+  const typeMax     = typeEntries[0]?.[1] || 1;
+
+  const TYPE_COLORS = {
+    'Second-hand': '#2d6a4f',
+    'Refurbished':  '#b5540a',
+    'Eco New':      '#1a6291',
+  };
+
+  // Summary KPIs
+  const avgOrderValue = stats.orders > 0 ? Math.round(stats.revenue / stats.orders) : 0;
+  const avgCo2        = stats.orders > 0 ? Math.round(stats.co2Saved / stats.orders) : 0;
+
+  return `
+    <!-- Header actions -->
+    <div style="display:flex;align-items:center;margin-bottom:20px">
+      <div style="font-size:12px;color:#888">Shared across all sessions · anonymised</div>
+      <div style="display:flex;gap:8px">
+        <button class="stat-refresh-btn" onclick="loadStats()" aria-label="Refresh statistics">🔄 Refresh</button>
+        <button class="stat-refresh-btn" onclick="exportStats()" aria-label="Export statistics as JSON" style="background:var(--blue);color:white;border-color:var(--blue)">⬇ Export JSON</button>
+      </div>
+    </div>
+
+    <!-- KPI grid -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card-title">Total Checkouts</div>
+        <div class="stat-card-value">${stats.orders}</div>
+        <div class="stat-card-sub">completed orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-title">Total Revenue</div>
+        <div class="stat-card-value">${(stats.revenue||0).toLocaleString('sv-SE')}</div>
+        <div class="stat-card-sub">kr across all orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-title">CO₂ Saved</div>
+        <div class="stat-card-value">${stats.co2Saved||0}</div>
+        <div class="stat-card-sub">kg vs buying new</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-title">Avg Order Value</div>
+        <div class="stat-card-value">${avgOrderValue.toLocaleString('sv-SE')}</div>
+        <div class="stat-card-sub">kr per checkout</div>
+      </div>
+    </div>
+
+    <!-- Category breakdown -->
+    <div class="stat-section-title">📦 Categories selected at checkout</div>
+    <div class="stat-card" style="padding:18px 20px 8px">
+      ${catEntries.length === 0
+        ? '<div style="color:#aaa;font-size:13px;text-align:center;padding:12px 0">No category data</div>'
+        : catEntries.map(([cat, count]) => `
+          <div class="stat-bar-row">
+            <div class="stat-bar-label" title="${cat}">${cat}</div>
+            <div class="stat-bar-track">
+              <div class="stat-bar-fill" style="width:${Math.round(count/catMax*100)}%"></div>
+            </div>
+            <div class="stat-bar-count">${count}</div>
+          </div>`).join('')}
+    </div>
+
+    <!-- Product type breakdown -->
+    <div class="stat-section-title">♻️ Sustainability tier at checkout</div>
+    <div class="stat-card" style="padding:18px 20px 8px">
+      ${typeEntries.length === 0
+        ? '<div style="color:#aaa;font-size:13px;text-align:center;padding:12px 0">No type data</div>'
+        : typeEntries.map(([type, count]) => `
+          <div class="stat-bar-row">
+            <div class="stat-bar-label" title="${type}">${type}</div>
+            <div class="stat-bar-track">
+              <div class="stat-bar-fill" style="width:${Math.round(count/typeMax*100)}%;background:${TYPE_COLORS[type]||'var(--blue)'}"></div>
+            </div>
+            <div class="stat-bar-count">${count}</div>
+          </div>`).join('')}
+    </div>
+
+    <!-- Order history -->
+    <div class="stat-section-title">🕐 Recent checkouts (newest first)</div>
+    <div class="stat-card" style="padding:12px 20px">
+      ${history.length === 0
+        ? '<div style="color:#aaa;font-size:13px;text-align:center;padding:12px 0">No history yet</div>'
+        : history.slice(0,15).map(h => {
+            const d   = new Date(h.ts);
+            const date = d.toLocaleDateString('sv-SE');
+            const time = d.toLocaleTimeString('sv-SE', {hour:'2-digit',minute:'2-digit'});
+            const cats = [...new Set(h.categories||[])].join(', ') || '—';
+            const types = [...new Set(h.types||[])].join(', ') || '—';
+            return `
+              <div class="stat-history-row">
+                <div class="stat-dot"></div>
+                <div style="flex:1">
+                  <div style="font-weight:600;color:#222;margin-bottom:2px">${h.items} item${h.items!==1?'s':''} · ${(h.total||0).toLocaleString('sv-SE')} kr</div>
+                  <div style="color:#888">${cats}</div>
+                  <div style="color:#aaa;font-size:11px;margin-top:2px">${types} · ${date} ${time}</div>
+                </div>
+              </div>`;
+          }).join('')}
+    </div>
+
+    <div style="font-size:11px;color:#bbb;text-align:center;margin-top:16px;padding-bottom:8px">
+      Data stored in shared session storage · max 200 records retained
+    </div>
+  `;
+}
+
+
+function exportStats() {
+  window.storage.get('ikea-sustainable-stats', true)
+    .then(raw => {
+      const data = raw ? JSON.parse(raw.value) : {};
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'ikea-checkout-stats-' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    })
+    .catch(() => alert('No statistics data found.'));
+}
+
 </script>
 
 <!-- ══════════════════════════════════════════════════════════════════ -->
@@ -2615,7 +2814,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div id="checkoutSteps" style="padding:24px 28px 0;display:flex;align-items:center;gap:0" role="navigation" aria-label="Checkout steps">
       <div class="ck-step active" id="ckStep1">1&nbsp;Delivery</div>
       <div class="ck-line" aria-hidden="true"></div>
-      <div class="ck-step" id="ckStep2">2&nbsp;Payment</div>
+      <div class="ck-step" id="ckStep2" style="display:none"></div>
       <div class="ck-line" aria-hidden="true"></div>
       <div class="ck-step" id="ckStep3">3&nbsp;Review</div>
     </div>
@@ -2637,32 +2836,11 @@ document.addEventListener('DOMContentLoaded', () => {
           <label class="ck-radio-card" id="delivOpt2" onclick="selectDelivery(this,'click')"><input type="radio" name="delivery" value="click" style="position:absolute;left:-9999px"><div style="font-weight:600;font-size:13px">🏪 Click & collect</div><div style="font-size:11px;color:#666;margin-top:3px">Ready in 2 days · Free</div></label>
         </div>
       </div>
-      <button onclick="goStep(2)" style="width:100%;margin-top:24px;background:#1a2e1a;color:#fff;border:none;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer" onmouseover="this.style.background='#2d4a2d'" onmouseout="this.style.background='#1a2e1a'">Continue to payment →</button>
+      <button onclick="goStep(3)" style="width:100%;margin-top:24px;background:#1a2e1a;color:#fff;border:none;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer" onmouseover="this.style.background='#2d4a2d'" onmouseout="this.style.background='#1a2e1a'">Review order →</button>
     </div>
 
     <!-- STEP 2 -->
-    <div id="ckPage2" style="padding:24px 28px 28px;display:none">
-      <div style="font-family:'Fraunces',serif;font-size:24px;margin-bottom:6px">Payment</div>
-      <div style="font-size:13px;color:#888;margin-bottom:24px">Prototype only — no real card details needed</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px" role="radiogroup" aria-label="Payment method">
-        <label class="ck-radio-card selected" id="payOpt1" onclick="selectPay(this,'card')"><div style="font-size:20px" aria-hidden="true">💳</div><div style="font-weight:600;font-size:12px;margin-top:4px">Card</div></label>
-        <label class="ck-radio-card" id="payOpt2" onclick="selectPay(this,'swish')"><div style="font-size:20px" aria-hidden="true">📱</div><div style="font-weight:600;font-size:12px;margin-top:4px">Swish</div></label>
-        <label class="ck-radio-card" id="payOpt3" onclick="selectPay(this,'klarna')"><div style="font-size:20px" aria-hidden="true">🅺</div><div style="font-weight:600;font-size:12px;margin-top:4px">Klarna</div></label>
-      </div>
-      <div id="cardFields">
-        <div style="margin-bottom:14px"><label class="ck-label" for="ckCard">Card number</label><input class="ck-input" id="ckCard" placeholder="4242 4242 4242 4242" maxlength="19" oninput="formatCard(this)" autocomplete="cc-number"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-          <div><label class="ck-label" for="ckExpiry">Expiry</label><input class="ck-input" id="ckExpiry" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)" autocomplete="cc-exp"></div>
-          <div><label class="ck-label" for="ckCvc">CVC</label><input class="ck-input" id="ckCvc" placeholder="•••" maxlength="3" type="password" autocomplete="cc-csc"></div>
-        </div>
-      </div>
-      <div id="swishFields" style="display:none"><label class="ck-label" for="ckSwish">Mobile number</label><input class="ck-input" id="ckSwish" placeholder="070 000 00 00" autocomplete="tel"><div style="font-size:12px;color:#888;margin-top:6px">A Swish notification will be sent to your phone</div></div>
-      <div id="klarnaFields" style="display:none;padding:16px;background:#fdf0ff;border-radius:8px;border:1px solid #e8c8f0"><div style="font-size:13px;font-weight:600;color:#4a0072">Pay in 3 installments — interest free</div><div style="font-size:12px;color:#666;margin-top:4px">You'll be redirected to Klarna to complete payment</div></div>
-      <div style="display:flex;gap:10px;margin-top:24px">
-        <button onclick="goStep(1)" style="flex:1;background:#fff;color:#333;border:1px solid #ddd;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">← Back</button>
-        <button onclick="goStep(3)" style="flex:2;background:#1a2e1a;color:#fff;border:none;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer" onmouseover="this.style.background='#2d4a2d'" onmouseout="this.style.background='#1a2e1a'">Review order →</button>
-      </div>
-    </div>
+    <div id="ckPage2" style="padding:24px 28px 28px;display:none"></div>
 
     <!-- STEP 3 -->
     <div id="ckPage3" style="padding:24px 28px 28px;display:none">
@@ -2676,7 +2854,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
       <div id="cartEcoReview" style="padding:12px 14px;background:#f0f7f0;border-radius:8px;border:1px solid #c8e6c8;margin-bottom:20px;font-size:12px;color:#2d5a2d;line-height:1.6"></div>
       <div style="display:flex;gap:10px">
-        <button onclick="goStep(2)" style="flex:1;background:#fff;color:#333;border:1px solid #ddd;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">← Back</button>
+        <button onclick="goStep(1)" style="flex:1;background:#fff;color:#333;border:1px solid #ddd;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer">← Back</button>
         <button onclick="placeOrder()" style="flex:2;background:#1a2e1a;color:#fff;border:none;padding:15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer" onmouseover="this.style.background='#2d4a2d'" onmouseout="this.style.background='#1a2e1a'">Place order 🌱</button>
       </div>
     </div>
@@ -2700,6 +2878,37 @@ document.addEventListener('DOMContentLoaded', () => {
   <button onclick="goToPhase2()" aria-hidden="true" style="width:100%;padding:16px;background:var(--yellow);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;color:var(--blue);cursor:pointer;pointer-events:all;letter-spacing:.2px;box-shadow:0 8px 32px rgba(0,0,0,0.4)">
     ✓ See full results
   </button>
+</div>
+
+
+<!-- ══════════════════════════════════════════ -->
+<!-- STATS DASHBOARD PANEL                     -->
+<!-- ══════════════════════════════════════════ -->
+<div id="statsOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:3000;opacity:0;transition:opacity 0.25s" onclick="closeStats()" aria-hidden="true"></div>
+
+<div id="statsPanel" role="dialog" aria-modal="true" aria-label="Checkout statistics dashboard"
+  style="display:none;position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);
+         background:#fff;z-index:3001;transform:translateX(100%);transition:transform 0.3s ease;
+         overflow-y:auto;box-shadow:-4px 0 32px rgba(0,0,0,0.18);flex-direction:column">
+
+  <!-- Header -->
+  <div style="background:var(--blue);color:white;padding:20px 24px 16px;position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:12px">
+    <div style="flex:1">
+      <div style="font-size:11px;letter-spacing:1.5px;opacity:0.7;text-transform:uppercase;margin-bottom:2px">Backend Analytics</div>
+      <div style="font-size:20px;font-weight:700;letter-spacing:-0.3px">Checkout Statistics</div>
+    </div>
+    <button onclick="closeStats()" aria-label="Close statistics panel"
+      style="background:rgba(255,255,255,0.12);border:none;color:white;width:36px;height:36px;
+             border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>
+
+  <!-- Content -->
+  <div style="padding:24px" id="statsContent">
+    <div style="text-align:center;padding:60px 0;color:#aaa" id="statsLoading">
+      <div style="font-size:32px;margin-bottom:12px">⏳</div>
+      <div>Loading statistics…</div>
+    </div>
+  </div>
 </div>
 
 </body>
