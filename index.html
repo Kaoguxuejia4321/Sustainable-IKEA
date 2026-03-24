@@ -921,9 +921,9 @@ nav {
 
   <div class="p1-hero">
     <div class="p1-hero-text">
-      <div class="p1-eyebrow">IKEA Furniture Finder</div>
-      <h1 class="p1-title">Tell us what you need.<br><em>We'll help you find the right fit.</em></h1>
-      <p class="p1-sub">Browse new, second-hand, refurbished, and eco-certified furniture — with carbon and price data on every option, so you can compare what matters to you.</p>
+      <div class="p1-eyebrow">Sustainable Shopping Assistant</div>
+      <h1 class="p1-title">Tell us what you need.<br><em>We'll find the greenest way to get it.</em></h1>
+      <p class="p1-sub">Describe your furniture needs in plain language — our AI matches you with new, second-hand, refurbished, and eco-certified options, with real carbon data at every step.</p>
     </div>
     <div class="p1-stats" aria-label="Key statistics">
       <div class="p1-stat"><span class="p1-stat-num">-76%</span><span class="p1-stat-label">CO₂ vs new<br>(second-hand)</span></div>
@@ -1503,20 +1503,15 @@ const CATALOG = {
 // ═══════════════════════════════════════════
 // CONDITION ASSIGNMENT (A/B split)
 // ═══════════════════════════════════════════
-// Conditions: 'ai' = AI-assisted chat (Phase 1 chatbot + eco-ranked grid)
-//             'control' = standard dropdowns (Phase 1 form + price-sorted grid)
-// Assignment is random 50/50 and persisted in sessionStorage so it survives
-// page reloads within the same session but resets for new participants.
+// All participants use the AI conversational interface.
 function assignCondition() {
-  let c = sessionStorage.getItem('study_condition');
-  if (!c) {
-    c = Math.random() < 0.5 ? 'ai' : 'control';
-    sessionStorage.setItem('study_condition', c);
+  sessionStorage.setItem('study_condition', 'ai');
+  if (!sessionStorage.getItem('study_session_start')) {
     sessionStorage.setItem('study_session_start', Date.now());
   }
-  return c;
+  return 'ai';
 }
-const STUDY_CONDITION = assignCondition(); // 'ai' | 'control'
+const STUDY_CONDITION = assignCondition();
 
 // ═══════════════════════════════════════════
 // STATE
@@ -1530,8 +1525,8 @@ let activeTabFilter  = 'all';
 let activeMinEco     = 0;
 let activeMinPrice   = 0;
 let activeMaxPrice   = 999999;
-// Default sort: 'eco' for AI condition, 'price-asc' for control (neutral default)
-let activeSortVal    = STUDY_CONDITION === 'ai' ? 'eco' : 'price-asc';
+// Default sort: always 'eco' (AI condition)
+let activeSortVal    = 'eco';
 let activeMaterials  = new Set(['fsc','gots']); // default checked
 
 let aiReady          = false;
@@ -1982,7 +1977,7 @@ function backToPhase1() {
 
   step = 0;
   reqs.type = reqs.size = reqs.style = reqs.budget = reqs.eco = null;
-  activeSortVal = STUDY_CONDITION === 'ai' ? 'eco' : 'price-asc';
+  activeSortVal = 'eco';
   ['type','size','style','budget','eco'].forEach(k => {
     document.getElementById('req-'+k)?.classList.remove('filled');
     const v = document.getElementById('rv-'+k);
@@ -1994,27 +1989,19 @@ function backToPhase1() {
   document.getElementById('confirmBtn').setAttribute('aria-disabled','true');
   hideMobileCta();
 
-  if (STUDY_CONDITION === 'ai') {
-    document.getElementById('chatMessages').innerHTML = '';
-    addMsg('bot', "Hi! I'm your IKEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
-    const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
-    const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
-    const el = document.getElementById('quickChips');
-    el.innerHTML = '';
-    initial.forEach((t,i) => {
-      const s = document.createElement('button');
-      s.className = 'qchip';
-      s.textContent = icons[i]+' '+t.charAt(0).toUpperCase()+t.slice(1);
-      s.onclick = () => quickReply(t);
-      el.appendChild(s);
-    });
-  } else {
-    // Reset the control dropdowns
-    ['ctrl-type','ctrl-size','ctrl-style','ctrl-budget','ctrl-eco'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-  }
+  document.getElementById('chatMessages').innerHTML = '';
+  addMsg('bot', "Hi! I'm your IKEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
+  const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
+  const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
+  const el = document.getElementById('quickChips');
+  el.innerHTML = '';
+  initial.forEach((t,i) => {
+    const s = document.createElement('button');
+    s.className = 'qchip';
+    s.textContent = icons[i]+' '+t.charAt(0).toUpperCase()+t.slice(1);
+    s.onclick = () => quickReply(t);
+    el.appendChild(s);
+  });
 
   document.querySelectorAll('.mini-card').forEach(c => c.classList.remove('matched'));
   document.getElementById('floatMsgs').innerHTML = '';
@@ -2041,7 +2028,7 @@ function renderPhase2(type) {
   activeMinEco     = 0;
   activeMinPrice   = 0;
   activeMaxPrice   = 999999;
-  activeSortVal    = STUDY_CONDITION === 'ai' ? 'eco' : 'price-asc';
+  activeSortVal    = 'eco';
   activeMaterials  = new Set(['fsc','gots']);
 
   // Reset UI controls
@@ -2774,18 +2761,8 @@ document.addEventListener('keydown', e => {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navCart').onclick = openCart;
 
-  // Show the correct Phase 1 input column based on condition assignment
-  if (STUDY_CONDITION === 'ai') {
-    document.getElementById('p1AiCol').style.display = '';
-    // AI banner stays available (shown on first successful API call)
-  } else {
-    document.getElementById('p1ControlCol').style.display = '';
-    // Hide AI-specific elements in control condition
-    const banner = document.getElementById('aiBanner');
-    if (banner) banner.style.display = 'none';
-    const navStats = document.getElementById('navStats');
-    // Stats button still visible to researcher — no change needed
-  }
+  // Always use the AI chat path for Phase 1
+  document.getElementById('p1AiCol').style.display = '';
 
   // Load state from URL if present (shareable links)
   loadFromUrl();
