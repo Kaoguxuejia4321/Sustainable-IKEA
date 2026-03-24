@@ -634,7 +634,7 @@ nav {
 .alt-tab:focus { outline:2px solid var(--forest); outline-offset:2px; }
 
 /* Alt grid */
-.alt-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:14px; }
+.alt-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; }
 .alt-card { background:white; border-radius:10px; border:1.5px solid var(--border); overflow:hidden; cursor:pointer; transition:all 0.22s; position:relative; }
 .alt-card:hover { border-color:transparent; box-shadow:0 8px 28px rgba(0,0,0,0.11); transform:translateY(-3px); }
 .alt-card:focus-within { outline:2px solid var(--forest); outline-offset:2px; }
@@ -1245,7 +1245,7 @@ nav {
 
       <div class="results-hdr">
         <div class="results-title" id="resultsTitle">SÖDERHAMN <em>— and sustainable alternatives</em></div>
-        <div class="results-count" id="resultsCount" aria-live="polite">Showing <strong>10</strong> options</div>
+        <div class="results-count" id="resultsCount" aria-live="polite">Showing <strong>17</strong> options</div>
       </div>
 
       <div class="eco-banner" role="complementary" aria-label="Sustainability impact summary">
@@ -1253,7 +1253,7 @@ nav {
           💡 Choosing second-hand or refurbished over brand new reduces CO₂ by up to <strong>47 kg</strong> — equivalent to driving about <strong>200 km</strong>
         </div>
         <div class="eco-banner-stats" aria-hidden="true">
-          <div class="ebs"><span class="ebs-num">10</span><span class="ebs-label">total options</span></div>
+          <div class="ebs"><span class="ebs-num">16</span><span class="ebs-label">eco options</span></div>
           <div class="ebs"><span class="ebs-num">-60%</span><span class="ebs-label">max saving</span></div>
           <div class="ebs"><span class="ebs-num" id="maxCo2Banner">47 kg</span><span class="ebs-label">max CO₂ saved</span></div>
         </div>
@@ -1262,11 +1262,11 @@ nav {
       <!-- Flat grid — all 10 products including brand new -->
       <div class="alts-section">
         <div class="alt-tabs" role="tablist" aria-label="Filter by type">
-          <button class="alt-tab a-all" role="tab" aria-selected="true" onclick="filterAlts('all',this)">All (10)</button>
+          <button class="alt-tab a-all" role="tab" aria-selected="true" onclick="filterAlts('all',this)">All (17)</button>
           <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('new',this)">🆕 Brand new (1)</button>
-          <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('secondhand',this)">♻️ Second-hand (3)</button>
-          <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('refurb',this)">🔧 Refurbished (3)</button>
-          <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('eco',this)">🌿 Eco-certified new (3)</button>
+          <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('secondhand',this)">♻️ Second-hand (5)</button>
+          <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('refurb',this)">🔧 Refurbished (5)</button>
+          <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('eco',this)">🌿 Eco-certified new (6)</button>
         </div>
 
         <div class="alt-grid" id="altGrid" role="list" aria-label="All products" aria-live="polite"></div>
@@ -1321,15 +1321,25 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/soederhamn-sofa-fridtuna-dark-gray__1057767_pe848961_s5.jpg?f=xl',
     resultTitle:'SÖDERHAMN <em>— and greener alternatives</em>',
     products:[
+      // ── Second-hand (5) ──
       {name:'SÖDERHAMN', variant:'3-seat sofa · Orrsta light grey · Used Grade B', type:'secondhand', eco:7.8, price:3200, saving:4795, co2:47, img:'https://www.ikea.com/us/en/images/products/soederhamn-sofa-viarp-beige-brown__0802692_pe768543_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 60%', bestPick:true, materials:['fsc']},
       {name:'EKTORP', variant:'3-seat sofa · Cotton-linen · Used Grade A', type:'secondhand', eco:7.5, price:2800, saving:3395, co2:44, img:'https://www.ikea.com/gb/en/images/products/ektorp-3-seat-sofa-kilanda-light-beige__1194853_pe902103_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 55%', materials:['gots']},
       {name:'KIVIK', variant:'3-seat sofa · Tibbleby beige/gray · Used Grade B', type:'secondhand', eco:7.2, price:4100, saving:5895, co2:41, img:'https://www.ikea.com/us/en/images/products/kivik-sofa-tibbleby-beige-gray__1056144_pe848277_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 59%', materials:['fsc']},
+      {name:'VIMLE', variant:'2-seat sofa · Gunnared beige · Used Grade A', type:'secondhand', eco:7.0, price:2600, saving:3399, co2:39, img:'https://www.ikea.com/us/en/images/products/vimle-3-seat-sofa__0787232_PE763195_S5.JPG?f=l', badge:'Second-hand', ribbon:'Save 57%', materials:['fsc']},
+      {name:'GRÖNLID', variant:'3-seat sofa · Ljungen light red · Used Grade B', type:'secondhand', eco:6.9, price:3500, saving:4495, co2:37, img:'https://www.ikea.com/us/en/images/products/gronlid-3-seat-sofa-sporda-natural__0577300_pe668755_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 56%', materials:['gots']},
+      // ── Refurbished (5) ──
       {name:'SÖDERHAMN', variant:'3-seat sofa · Professionally refurbished · 1-yr warranty', type:'refurb', eco:6.8, price:5200, saving:2795, co2:42, img:'https://www.ikea.com/us/en/images/products/soederhamn-sofa-viarp-beige-brown__0803568_pe768914_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 35%', materials:['recycled','fsc']},
       {name:'EKTORP', variant:'3-seat sofa · Recycled polyester fill · New cover', type:'refurb', eco:6.5, price:4600, saving:1595, co2:38, img:'https://www.ikea.com/gb/en/images/products/ektorp-3-seat-sofa-kilanda-light-beige__1194852_pe902102_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 26%', materials:['recycled']},
       {name:'VIMLE', variant:'3-seat sofa · Deep cleaned · New linen cover', type:'refurb', eco:6.2, price:5800, saving:2195, co2:35, img:'https://www.ikea.com/us/en/images/products/vimle-3-seat-sofa__0787232_PE763195_S5.JPG?f=l', badge:'Refurbished', ribbon:'Save 27%', materials:['gots']},
+      {name:'KIVIK', variant:'3-seat sofa · Reupholstered · Vissle grey', type:'refurb', eco:6.0, price:5400, saving:2595, co2:33, img:'https://www.ikea.com/us/en/images/products/kivik-sofa-tibbleby-beige-gray__1056144_pe848277_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 32%', materials:['recyclable']},
+      {name:'GRÖNLID', variant:'4-seat sofa · Repadded & new arm covers · Like new', type:'refurb', eco:5.8, price:6200, saving:2795, co2:30, img:'https://www.ikea.com/us/en/images/products/gronlid-3-seat-sofa-sporda-natural__0577300_pe668755_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 31%', materials:['gots','recycled']},
+      // ── Eco-certified new (6) ──
       {name:'ÄPPLARYD', variant:'3-seat sofa · Blekinge white · Eco line · 204×94 cm', type:'eco', eco:9.2, price:11499, saving:0, co2:28, img:'https://www.ikea.com/us/en/images/products/aepplaryd-sofa-lejde-gray-black__0992907_pe820325_s5.jpg?f=l', badge:'Eco New', materials:['gots','fsc','recyclable']},
       {name:'GRÖNLID', variant:'3-seat sofa · Sporda natural · GOTS line · 220×98 cm', type:'eco', eco:8.8, price:12995, saving:0, co2:25, img:'https://www.ikea.com/us/en/images/products/gronlid-3-seat-sofa-sporda-natural__0577300_pe668755_s5.jpg?f=l', badge:'Eco New', materials:['gots','fsc']},
       {name:'HYLTARP', variant:'3-seat sofa · Recycled fabric · FSC certified · 212×93 cm', type:'eco', eco:8.2, price:9899, saving:0, co2:20, img:'https://www.ikea.com/us/en/images/products/hyltarp-sofa-gransel-natural__1193814_pe901641_s5.jpg?f=l', badge:'Eco New', materials:['recycled','fsc','recyclable']},
+      {name:'EKTORP', variant:'2-seat sofa · Organic Hallarp beige · Low-VOC finish', type:'eco', eco:8.0, price:7499, saving:0, co2:18, img:'https://www.ikea.com/gb/en/images/products/ektorp-3-seat-sofa-kilanda-light-beige__1194852_pe902102_s5.jpg?f=l', badge:'Eco New', materials:['gots','fsc']},
+      {name:'SÖDERHAMN', variant:'3-seat sofa · GOTS organic cotton · Zero waste packaging', type:'eco', eco:7.8, price:10495, saving:0, co2:16, img:'https://www.ikea.com/us/en/images/products/soederhamn-sofa-viarp-beige-brown__0802692_pe768543_s5.jpg?f=l', badge:'Eco New', materials:['gots','recyclable']},
+      {name:'VIMLE', variant:'3-seat sofa · Recycled steel frame · Organic fabric', type:'eco', eco:7.4, price:8999, saving:0, co2:14, img:'https://www.ikea.com/us/en/images/products/vimle-3-seat-sofa__0787232_PE763195_S5.JPG?f=l', badge:'Eco New', materials:['recycled','gots','fsc']},
     ]
   },
   'Dining table': {
@@ -1337,15 +1347,25 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s',
     resultTitle:'MÖRBYLÅNGA <em>— and greener alternatives</em>',
     products:[
+      // ── Second-hand (5) ──
       {name:'MÖRBYLÅNGA', variant:'Oak veneer dining table · Used Grade A · 220×100 cm', type:'secondhand', eco:8.1, price:3800, saving:4200, co2:52, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 52%', bestPick:true, materials:['fsc']},
       {name:'LISABO', variant:'Ash veneer dining table · Used Grade B · 140×78 cm', type:'secondhand', eco:7.6, price:1200, saving:1400, co2:38, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['fsc']},
-      {name:'EKEDALEN', variant:'Extendable oak table · Used Grade A · 120–180 cm', type:'secondhand', eco:7.3, price:2200, saving:2600, co2:41, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1360001_pe954330_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['fsc']},
+      {name:'EKEDALEN', variant:'Extendable oak table · Used Grade A · 120–180 cm', type:'secondhand', eco:7.3, price:2200, saving:2600, co2:41, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['fsc']},
+      {name:'INGATORP', variant:'Extendable table · White · Used Grade A · 155–215 cm', type:'secondhand', eco:7.1, price:1800, saving:2195, co2:35, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 55%', materials:['fsc']},
+      {name:'STORNÄS', variant:'Extendable solid pine table · Used Grade B · 201–247 cm', type:'secondhand', eco:6.9, price:2600, saving:3399, co2:33, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 57%', materials:['fsc']},
+      // ── Refurbished (5) ──
       {name:'MÖRBYLÅNGA', variant:'Oak veneer · Professionally restored · New finish', type:'refurb', eco:7.0, price:5500, saving:2500, co2:44, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 31%', materials:['fsc','recyclable']},
       {name:'LISABO', variant:'Ash veneer · Sanded & re-oiled · Like new', type:'refurb', eco:6.7, price:1800, saving:800, co2:31, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__1470751_pe996928_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 31%', materials:['fsc']},
-      {name:'NACKANÄS', variant:'Solid pine table · Refinished · Sustainable pine', type:'refurb', eco:6.4, price:3200, saving:1100, co2:28, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0719765_pe732180_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 26%', materials:['fsc']},
+      {name:'NACKANÄS', variant:'Solid pine table · Refinished · Sustainable pine', type:'refurb', eco:6.4, price:3200, saving:1100, co2:28, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 26%', materials:['fsc']},
+      {name:'EKEDALEN', variant:'Oak table · Recoated top · New legs · 120–180 cm', type:'refurb', eco:6.2, price:2800, saving:1395, co2:26, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 33%', materials:['fsc','bio']},
+      {name:'INGATORP', variant:'White table · Stripped & repainted · Like new', type:'refurb', eco:5.9, price:2200, saving:1795, co2:22, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__1470751_pe996928_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 45%', materials:['recyclable']},
+      // ── Eco-certified new (6) ──
       {name:'INDUSTRIELL', variant:'Solid oak dining table · FSC certified · 180×90 cm', type:'eco', eco:9.0, price:9995, saving:0, co2:21, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
-      {name:'GAMLEBY', variant:'Solid pine · Water-based lacquer · 150×75 cm', type:'eco', eco:8.5, price:4995, saving:0, co2:18, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0719764_pe732179_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
-      {name:'SANDSBERG', variant:'Bamboo top · Powder-coated steel · 110×67 cm', type:'eco', eco:8.0, price:2995, saving:0, co2:15, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0719381_pe732029_s5.jpg?f=s', badge:'Eco New', materials:['bio','recyclable']},
+      {name:'GAMLEBY', variant:'Solid pine · Water-based lacquer · 150×75 cm', type:'eco', eco:8.5, price:4995, saving:0, co2:18, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__1470751_pe996928_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
+      {name:'SANDSBERG', variant:'Bamboo top · Powder-coated steel · 110×67 cm', type:'eco', eco:8.0, price:2995, saving:0, co2:15, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Eco New', materials:['bio','recyclable']},
+      {name:'MÖRBYLÅNGA', variant:'Oak veneer · FSC certified · Low-VOC lacquer · 220×100 cm', type:'eco', eco:7.8, price:8995, saving:0, co2:14, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'LERHAMN', variant:'Solid pine · Water-based stain · 74×74 cm · FSC', type:'eco', eco:7.5, price:1995, saving:0, co2:12, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
+      {name:'NORRÅKER', variant:'Solid birch table · Untreated FSC wood · 74×74 cm', type:'eco', eco:7.2, price:2495, saving:0, co2:10, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio','recyclable']},
     ]
   },
   'Bed frame': {
@@ -1353,15 +1373,25 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0800872_ph163685_s5.jpg?f=s',
     resultTitle:'HEMNES <em>— and greener alternatives</em>',
     products:[
+      // ── Second-hand (5) ──
       {name:'HEMNES', variant:'Solid pine bed frame · Used Grade A · 160×200 cm', type:'secondhand', eco:7.9, price:1800, saving:2200, co2:39, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0637516_pe698353_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 55%', bestPick:true, materials:['fsc']},
       {name:'MALM', variant:'High gloss white bed frame · Used Grade B · 160×200 cm', type:'secondhand', eco:7.4, price:1400, saving:1600, co2:34, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__0749130_pe745499_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 53%', materials:['recyclable']},
       {name:'TARVA', variant:'Solid pine bed frame · Used Grade A · 140×200 cm', type:'secondhand', eco:7.1, price:950, saving:1050, co2:28, img:'https://www.ikea.com/us/en/images/products/tarva-bed-frame-pine__0637611_pe698421_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 52%', materials:['fsc']},
+      {name:'BRIMNES', variant:'Bed frame with storage · Used Grade B · 160×200 cm', type:'secondhand', eco:6.9, price:1600, saving:1895, co2:31, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0742586_ph156773_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['recyclable']},
+      {name:'NEIDEN', variant:'Solid pine bed frame · Used Grade A · 90×200 cm', type:'secondhand', eco:6.7, price:700, saving:795, co2:26, img:'https://www.ikea.com/us/en/images/products/neiden-bed-frame-pine__0749132_pe745501_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 53%', materials:['recyclable']},
+      // ── Refurbished (5) ──
       {name:'HEMNES', variant:'Solid pine · Sanded & repainted · Like new', type:'refurb', eco:6.9, price:2800, saving:1200, co2:31, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0800872_ph163685_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 30%', materials:['fsc','bio']},
       {name:'MALM', variant:'High gloss · Repainted · New hardware · Like new', type:'refurb', eco:6.5, price:2000, saving:1000, co2:26, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__0800857_ph163673_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 33%', materials:['recyclable']},
       {name:'TARVA', variant:'Solid pine · Sanded & re-oiled · Minimalist', type:'refurb', eco:6.2, price:1400, saving:600, co2:20, img:'https://www.ikea.com/us/en/images/products/tarva-bed-frame-pine__1102036_pe866857_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 30%', materials:['fsc']},
+      {name:'BRIMNES', variant:'Storage bed · New drawer runners · Repainted', type:'refurb', eco:5.9, price:2200, saving:1295, co2:18, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 37%', materials:['recyclable']},
+      {name:'NEIDEN', variant:'Solid pine · Sanded & re-oiled · Natural finish', type:'refurb', eco:5.7, price:1000, saving:495, co2:16, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0637516_pe698353_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 33%', materials:['recyclable','bio']},
+      // ── Eco-certified new (6) ──
       {name:'GJÖRA', variant:'Solid birch bed frame · FSC certified · 160×200 cm', type:'eco', eco:9.1, price:5995, saving:0, co2:18, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
       {name:'HEMNES', variant:'Solid pine · Water-based stain · FSC · 160×200 cm', type:'eco', eco:8.6, price:3995, saving:0, co2:15, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0742586_ph156773_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
       {name:'NEIDEN', variant:'Solid pine · Minimal frame · FSC certified', type:'eco', eco:8.1, price:1995, saving:0, co2:12, img:'https://www.ikea.com/us/en/images/products/neiden-bed-frame-pine__0749132_pe745501_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'TARVA', variant:'Solid pine · Untreated FSC wood · 140×200 cm', type:'eco', eco:7.8, price:2295, saving:0, co2:10, img:'https://www.ikea.com/us/en/images/products/tarva-bed-frame-pine__1102036_pe866857_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
+      {name:'MALM', variant:'Bed frame · FSC veneer · Low-emission board · 160×200 cm', type:'eco', eco:7.4, price:3495, saving:0, co2:9, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__0749130_pe745499_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'BRIMNES', variant:'Storage bed · Recycled steel hardware · FSC board', type:'eco', eco:7.0, price:4495, saving:0, co2:8, img:'https://www.ikea.com/us/en/images/products/tarva-bed-frame-pine__0637611_pe698421_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recycled','recyclable']},
     ]
   },
   'Bookshelf': {
@@ -1369,15 +1399,25 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/billy-bookcase-white__0625599_pe692385_s5.jpg?f=s',
     resultTitle:'BILLY <em>— and greener alternatives</em>',
     products:[
+      // ── Second-hand (5) ──
       {name:'BILLY', variant:'Bookcase · Used Grade A · 80×202 cm', type:'secondhand', eco:7.7, price:350, saving:550, co2:18, img:'https://www.ikea.com/us/en/images/products/billy-bookcase-white__0625599_pe692385_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 61%', bestPick:true, materials:['fsc','recyclable']},
       {name:'KALLAX', variant:'Shelf unit · Used Grade B · 77×147 cm', type:'secondhand', eco:7.3, price:450, saving:550, co2:15, img:'https://www.ikea.com/us/en/images/products/kallax-shelf-unit-white__0644753_pe702937_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 55%', materials:['recyclable']},
       {name:'HEMNES', variant:'Bookcase solid pine · Used Grade A · 90×197 cm', type:'secondhand', eco:7.0, price:1100, saving:900, co2:21, img:'https://www.ikea.com/us/en/images/products/hemnes-bookcase-white-stain__0644279_pe702557_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 45%', materials:['fsc']},
+      {name:'BESTA', variant:'Storage combo · Used Grade A · 120×42×193 cm', type:'secondhand', eco:6.8, price:1600, saving:1895, co2:19, img:'https://www.ikea.com/us/en/images/products/hemnes-bookcase-white-stain__0394537_pe561360_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['recyclable']},
+      {name:'IVAR', variant:'Solid pine shelf unit · Used Grade B · 89×50×179 cm', type:'secondhand', eco:6.5, price:750, saving:650, co2:17, img:'https://www.ikea.com/us/en/images/products/ivar-shelf-unit-pine__1216943_pe928443_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 46%', materials:['fsc']},
+      // ── Refurbished (5) ──
       {name:'BILLY', variant:'Bookcase · Cleaned & re-edged · Like new', type:'refurb', eco:6.8, price:550, saving:350, co2:14, img:'https://www.ikea.com/us/en/images/products/billy-bookcase-white__1237507_pe917999_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 39%', materials:['fsc','recyclable']},
       {name:'KALLAX', variant:'Shelf unit · Repainted · New inserts available', type:'refurb', eco:6.4, price:650, saving:350, co2:12, img:'https://www.ikea.com/us/en/images/products/kallax-shelf-unit-white__1084741_pe859827_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 35%', materials:['recycled']},
       {name:'IVAR', variant:'Solid pine shelf · Sanded & re-oiled', type:'refurb', eco:6.1, price:900, saving:400, co2:10, img:'https://www.ikea.com/us/en/images/products/ivar-shelf-unit-pine__1216943_pe928443_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 31%', materials:['fsc']},
-      {name:'BILLY', variant:'Bookcase · Sustainably sourced birch · 80×202 cm', type:'eco', eco:8.9, price:1295, saving:0, co2:9, img:'https://www.ikea.com/us/en/images/products/kallax-shelf-unit-white__1113779_pe871547_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'HEMNES', variant:'Solid pine bookcase · Stripped & whitewashed · Like new', type:'refurb', eco:5.9, price:1500, saving:595, co2:14, img:'https://www.ikea.com/us/en/images/products/hemnes-bookcase-white-stain__0644279_pe702557_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 28%', materials:['fsc','bio']},
+      {name:'BESTA', variant:'Storage unit · Cleaned · New doors fitted · Like new', type:'refurb', eco:5.6, price:2000, saving:1495, co2:11, img:'https://www.ikea.com/us/en/images/products/kallax-shelf-unit-white__1113779_pe871547_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 43%', materials:['recyclable']},
+      // ── Eco-certified new (6) ──
+      {name:'BILLY', variant:'Bookcase · Sustainably sourced birch · 80×202 cm', type:'eco', eco:8.9, price:1295, saving:0, co2:9, img:'https://www.ikea.com/us/en/images/products/billy-bookcase-white__0625599_pe692385_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
       {name:'FJÄLLBO', variant:'Shelf unit · Recycled steel frame · FSC pine', type:'eco', eco:8.4, price:2495, saving:0, co2:7, img:'https://www.ikea.com/us/en/images/products/kallax-shelf-unit-white__1106842_pe868819_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recycled','recyclable']},
-      {name:'LAIVA', variant:'Bookcase · FSC certified board · 62×165 cm', type:'eco', eco:7.9, price:695, saving:0, co2:6, img:'https://www.ikea.com/us/en/images/products/hemnes-bookcase-white-stain__0394537_pe561360_s5.jpg?f=s', badge:'Eco New', materials:['fsc']},
+      {name:'HEMNES', variant:'Bookcase · FSC certified solid pine · 90×197 cm', type:'eco', eco:7.9, price:695, saving:0, co2:6, img:'https://www.ikea.com/us/en/images/products/hemnes-bookcase-white-stain__0644279_pe702557_s5.jpg?f=s', badge:'Eco New', materials:['fsc']},
+      {name:'KALLAX', variant:'Shelf unit · FSC board · Zero-VOC paint · 77×147 cm', type:'eco', eco:7.6, price:1595, saving:0, co2:5, img:'https://www.ikea.com/us/en/images/products/kallax-shelf-unit-white__0644753_pe702937_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'IVAR', variant:'Solid untreated pine · Modular · FSC certified', type:'eco', eco:7.3, price:1395, saving:0, co2:5, img:'https://www.ikea.com/us/en/images/products/ivar-shelf-unit-pine__1216943_pe928443_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
+      {name:'HEMNES', variant:'Solid pine · Water-based lacquer · FSC · 90×197 cm', type:'eco', eco:7.0, price:2995, saving:0, co2:8, img:'https://www.ikea.com/us/en/images/products/hemnes-bookcase-white-stain__0394537_pe561360_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio','recyclable']},
     ]
   },
   'Desk': {
@@ -1385,15 +1425,25 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/bekant-desk-white__0855220_pe714635_s5.jpg?f=xl',
     resultTitle:'BEKANT <em>— and greener alternatives</em>',
     products:[
+      // ── Second-hand (5) ──
       {name:'ANFALLARE', variant:'Bamboo desk · Used Grade A · 140×65 cm', type:'secondhand', eco:7.8, price:450, saving:550, co2:14, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 55%', bestPick:true, materials:['bio','fsc']},
       {name:'BEKANT', variant:'Sit/stand desk · Used Grade B · 160×80 cm', type:'secondhand', eco:7.4, price:2200, saving:2800, co2:28, img:'https://www.ikea.com/us/en/images/products/bekant-desk-white__1160567_pe888964_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 56%', materials:['recyclable']},
       {name:'ALEX', variant:'Desk with drawers · Used Grade A · 131×60 cm', type:'secondhand', eco:7.1, price:850, saving:650, co2:19, img:'https://www.ikea.com/us/en/images/products/alex-desk-white__0977666_pe813729_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 43%', materials:['recyclable']},
+      {name:'LAGKAPTEN', variant:'Desk top + legs · Bamboo · Used Grade A · 140×60 cm', type:'secondhand', eco:6.9, price:700, saving:590, co2:16, img:'https://www.ikea.com/us/en/images/products/lagkapten-adils-desk-white-black__0976081_pe812979_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 46%', materials:['bio','fsc']},
+      {name:'IDÅSEN', variant:'Sit/stand desk · Used Grade A · 120×70 cm', type:'secondhand', eco:6.6, price:450, saving:545, co2:13, img:'https://www.ikea.com/us/en/images/products/idasen-desk-sit-stand-black-dark-gray__0734939_pe739673_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 55%', materials:['recyclable']},
+      // ── Refurbished (5) ──
       {name:'BEKANT', variant:'Sit/stand desk · Recalibrated & cleaned · Like new', type:'refurb', eco:6.8, price:3800, saving:2200, co2:22, img:'https://www.ikea.com/us/en/images/products/bekant-desk-white__1160561_pe888958_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 37%', materials:['recycled','recyclable']},
       {name:'LINNMON', variant:'Bamboo top · Re-edged & new legs · Like new', type:'refurb', eco:6.4, price:700, saving:300, co2:11, img:'https://www.ikea.com/us/en/images/products/linnmon-tabletop-white__1097492_pe864988_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 30%', materials:['bio']},
-      {name:'SKRUVSTA', variant:'Birch veneer · Refinished · Eco-safe lacquer', type:'refurb', eco:6.1, price:1200, saving:500, co2:14, img:'https://www.ikea.com/us/en/images/products/lagkapten-adils-desk-white-black__0976081_pe812979_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 29%', materials:['fsc','bio']},
+      {name:'SKRUVSTA', variant:'Birch desk · Refinished & re-lacquered · Like new', type:'refurb', eco:6.1, price:1200, saving:500, co2:14, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 29%', materials:['fsc','bio']},
+      {name:'ALEX', variant:'Desk · Cleaned, new handles · Drawer liners replaced', type:'refurb', eco:5.9, price:1100, saving:395, co2:12, img:'https://www.ikea.com/us/en/images/products/lagkapten-adils-desk-white-black__0976081_pe812979_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 26%', materials:['recyclable']},
+      {name:'IDÅSEN', variant:'Sit/stand desk · Serviced & cleaned · Like new', type:'refurb', eco:5.6, price:600, saving:395, co2:9, img:'https://www.ikea.com/us/en/images/products/idasen-desk-sit-stand-black-dark-gray__0734939_pe739673_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 40%', materials:['recyclable']},
+      // ── Eco-certified new (6) ──
       {name:'ANFALLARE', variant:'Bamboo desk · FSC certified · 140×65 cm', type:'eco', eco:9.1, price:2995, saving:0, co2:8, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc','recyclable']},
       {name:'LINNMON', variant:'Bamboo tabletop · Sustainably harvested · 150×75 cm', type:'eco', eco:8.5, price:995, saving:0, co2:6, img:'https://www.ikea.com/us/en/images/products/linnmon-tabletop-white__1097492_pe864988_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc']},
       {name:'IDÅSEN', variant:'Bamboo/steel desk · Low-emission · 120×70 cm', type:'eco', eco:8.0, price:4995, saving:0, co2:11, img:'https://www.ikea.com/us/en/images/products/idasen-desk-sit-stand-black-dark-gray__0734939_pe739673_s5.jpg?f=l', badge:'Eco New', materials:['bio','recyclable']},
+      {name:'LAGKAPTEN', variant:'Bamboo tabletop · FSC certified · Water-based varnish · 140×60 cm', type:'eco', eco:7.7, price:1295, saving:0, co2:7, img:'https://www.ikea.com/us/en/images/products/lagkapten-adils-desk-white-black__0976081_pe812979_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc','recyclable']},
+      {name:'BEKANT', variant:'Desk · FSC board · Zero-VOC finish · 120×80 cm', type:'eco', eco:7.3, price:2295, saving:0, co2:9, img:'https://www.ikea.com/us/en/images/products/bekant-desk-white__1160567_pe888964_s5.jpg?f=l', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'ALEX', variant:'Desk with drawers · FSC wood · Low-emission board · 131×60 cm', type:'eco', eco:7.0, price:2995, saving:0, co2:8, img:'https://www.ikea.com/us/en/images/products/alex-desk-white__0977666_pe813729_s5.jpg?f=l', badge:'Eco New', materials:['fsc','recyclable']},
     ]
   },
   'Chair': {
@@ -1401,15 +1451,25 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/poaeng-armchair-birch-veneer-knisa-light-beige__0837298_pe666936_s5.jpg?f=s',
     resultTitle:'POÄNG <em>— and greener alternatives</em>',
     products:[
+      // ── Second-hand (5) ──
       {name:'POÄNG', variant:'Armchair · Birch veneer · Used Grade A', type:'secondhand', eco:7.9, price:450, saving:750, co2:12, img:'https://www.ikea.com/us/en/images/products/poaeng-armchair-birch-veneer-knisa-light-beige__0571500_pe666933_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 63%', bestPick:true, materials:['fsc']},
       {name:'STRANDMON', variant:'Wing chair · Skiftebo yellow · Used Grade B', type:'secondhand', eco:7.5, price:1200, saving:1300, co2:22, img:'https://www.ikea.com/us/en/images/products/strandmon-armchair-and-ottoman-skiftebo-yellow__1094844_pe863644_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 52%', materials:['gots']},
       {name:'EKEDALEN', variant:'Chair · Dark brown/Orrsta light grey · Used Grade A', type:'secondhand', eco:7.2, price:400, saving:400, co2:9, img:'https://www.ikea.com/us/en/images/products/ekedalen-bar-stool-with-backrest-dark-brown-orrsta-light-gray__0657901_pe710031_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 50%', materials:['fsc']},
+      {name:'TULLSTA', variant:'Armchair · Nacka light green · Used Grade A', type:'secondhand', eco:7.0, price:550, saving:395, co2:17, img:'https://www.ikea.com/us/en/images/products/tullsta-armchair-lofallet-beige__0602718_pe680490_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 42%', materials:['gots']},
+      {name:'STRANDMON', variant:'Wing chair · Nordvalla light beige · Used Grade B', type:'secondhand', eco:6.8, price:1100, saving:1395, co2:14, img:'https://www.ikea.com/us/en/images/products/strandmon-wing-chair-nordvalla-dark-gray__1116445_pe872501_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 56%', materials:['recyclable']},
+      // ── Refurbished (5) ──
       {name:'POÄNG', variant:'Armchair · New seat cushion · Professionally cleaned', type:'refurb', eco:6.7, price:750, saving:450, co2:9, img:'https://www.ikea.com/us/en/images/products/poaeng-armchair-birch-veneer-knisa-light-beige__0837295_pe666935_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 38%', materials:['fsc','gots']},
       {name:'STRANDMON', variant:'Wing chair · Dark grey · New cover · Like new', type:'refurb', eco:6.3, price:1800, saving:700, co2:18, img:'https://www.ikea.com/us/en/images/products/strandmon-wing-chair-nordvalla-dark-gray__1116445_pe872501_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 28%', materials:['recycled']},
       {name:'TULLSTA', variant:'Armchair · Beige · Cleaned & new foam padding', type:'refurb', eco:6.0, price:700, saving:250, co2:14, img:'https://www.ikea.com/us/en/images/products/tullsta-armchair-lofallet-beige__0602718_pe680490_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 26%', materials:['gots']},
+      {name:'EKEDALEN', variant:'Chair · Reupholstered in Orrsta · Solid oak legs sanded', type:'refurb', eco:5.8, price:650, saving:345, co2:8, img:'https://www.ikea.com/us/en/images/products/ekedalen-bar-stool-with-backrest-dark-brown-orrsta-light-gray__0657901_pe710031_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 35%', materials:['fsc','gots']},
+      {name:'STRANDMON', variant:'Wing chair · New foam & cover · 1-year warranty', type:'refurb', eco:5.5, price:1600, saving:895, co2:11, img:'https://www.ikea.com/us/en/images/products/strandmon-armchair-and-ottoman-skiftebo-yellow__1094844_pe863644_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 36%', materials:['recyclable']},
+      // ── Eco-certified new (6) ──
       {name:'LILLBERG', variant:'Rocking chair · Solid FSC birch · Natural finish', type:'eco', eco:9.3, price:2495, saving:0, co2:7, img:'https://www.ikea.com/us/en/images/products/poaeng-rocking-chair-brown-hillared-anthracite__0497817_pe629338_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio','recyclable']},
       {name:'POÄNG', variant:'Armchair · FSC birch · GOTS organic cotton cushion', type:'eco', eco:8.7, price:1595, saving:0, co2:5, img:'https://www.ikea.com/us/en/images/products/poaeng-armchair-birch-veneer-knisa-light-beige__0837285_pe666934_s5.jpg?f=s', badge:'Eco New', materials:['fsc','gots','recyclable']},
       {name:'VILMAR', variant:'Chair · Green velvet · Solid FSC beech', type:'eco', eco:8.2, price:895, saving:0, co2:4, img:'https://www.ikea.com/us/en/images/products/strandmon-wing-chair-djuparp-dark-green__0531313_pe647261_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
+      {name:'STRANDMON', variant:'Wing chair · GOTS certified wool · FSC beech frame', type:'eco', eco:7.9, price:4495, saving:0, co2:6, img:'https://www.ikea.com/us/en/images/products/strandmon-armchair-and-ottoman-skiftebo-yellow__1094844_pe863644_s5.jpg?f=s', badge:'Eco New', materials:['gots','fsc','recyclable']},
+      {name:'TULLSTA', variant:'Armchair · Organic cotton cover · FSC beech legs', type:'eco', eco:7.6, price:1395, saving:0, co2:5, img:'https://www.ikea.com/us/en/images/products/tullsta-armchair-lofallet-beige__0602718_pe680490_s5.jpg?f=s', badge:'Eco New', materials:['gots','fsc']},
+      {name:'EKEDALEN', variant:'Chair · Solid oak · Water-based lacquer · FSC certified', type:'eco', eco:7.2, price:1495, saving:0, co2:4, img:'https://www.ikea.com/us/en/images/products/ekedalen-bar-stool-with-backrest-dark-brown-orrsta-light-gray__0657901_pe710031_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio','recyclable']},
     ]
   },
   'Furniture': {
@@ -1417,15 +1477,25 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/soederhamn-sofa-fridtuna-dark-gray__1057767_pe848961_s5.jpg?f=xl',
     resultTitle:'Sustainable <em>furniture — greener alternatives</em>',
     products:[
+      // ── Second-hand (5) ──
       {name:'SÖDERHAMN', variant:'3-seat sofa · Orrsta light grey · Used Grade B', type:'secondhand', eco:7.8, price:3200, saving:4795, co2:47, img:'https://www.ikea.com/us/en/images/products/soederhamn-sofa-viarp-beige-brown__0802692_pe768543_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 60%', bestPick:true, materials:['fsc']},
       {name:'MÖRBYLÅNGA', variant:'Oak dining table · Used Grade A · 220×100 cm', type:'secondhand', eco:7.5, price:3800, saving:4200, co2:52, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 52%', materials:['fsc']},
-      {name:'HEMNES', variant:'Bed frame solid pine · Used Grade A', type:'secondhand', eco:7.2, price:1800, saving:2200, co2:39, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0637516_pe698353_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 55%', materials:['fsc']},
-      {name:'SÖDERHAMN', variant:'3-seat sofa · Professionally refurbished', type:'refurb', eco:6.8, price:5200, saving:2795, co2:42, img:'https://www.ikea.com/us/en/images/products/soederhamn-sofa-viarp-beige-brown__0803568_pe768914_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 35%', materials:['recycled','fsc']},
-      {name:'BILLY', variant:'Bookcase · Cleaned & re-edged · Like new', type:'refurb', eco:6.5, price:550, saving:350, co2:14, img:'https://www.ikea.com/us/en/images/products/billy-bookcase-white__0625599_pe692385_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 39%', materials:['fsc','recyclable']},
-      {name:'MALM', variant:'Bed frame · Repainted · New hardware', type:'refurb', eco:6.2, price:2000, saving:1000, co2:26, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__0800857_ph163673_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 33%', materials:['recyclable']},
-      {name:'ÄPPLARYD', variant:'3-seat sofa · Eco line · 100% organic cotton', type:'eco', eco:9.2, price:11499, saving:0, co2:28, img:'https://www.ikea.com/us/en/images/products/aepplaryd-sofa-lejde-gray-black__0992907_pe820325_s5.jpg?f=l', badge:'Eco New', materials:['gots','fsc','recyclable']},
-      {name:'INDUSTRIELL', variant:'Solid oak dining table · FSC certified', type:'eco', eco:8.6, price:9995, saving:0, co2:21, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
-      {name:'GJÖRA', variant:'Solid birch bed frame · FSC certified', type:'eco', eco:8.1, price:5995, saving:0, co2:18, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'HEMNES', variant:'Bed frame solid pine · Used Grade A · 160×200 cm', type:'secondhand', eco:7.2, price:1800, saving:2200, co2:39, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0637516_pe698353_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 55%', materials:['fsc']},
+      {name:'BILLY', variant:'Bookcase · Used Grade A · 80×202 cm', type:'secondhand', eco:6.9, price:350, saving:550, co2:18, img:'https://www.ikea.com/us/en/images/products/billy-bookcase-white__0625599_pe692385_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 61%', materials:['fsc','recyclable']},
+      {name:'POÄNG', variant:'Armchair · Birch veneer · Used Grade A', type:'secondhand', eco:6.7, price:450, saving:750, co2:12, img:'https://www.ikea.com/us/en/images/products/poaeng-armchair-birch-veneer-knisa-light-beige__0571500_pe666933_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 63%', materials:['fsc']},
+      // ── Refurbished (5) ──
+      {name:'SÖDERHAMN', variant:'3-seat sofa · Professionally refurbished · 1-yr warranty', type:'refurb', eco:6.8, price:5200, saving:2795, co2:42, img:'https://www.ikea.com/us/en/images/products/soederhamn-sofa-viarp-beige-brown__0803568_pe768914_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 35%', materials:['recycled','fsc']},
+      {name:'BILLY', variant:'Bookcase · Cleaned & re-edged · Like new', type:'refurb', eco:6.5, price:550, saving:350, co2:14, img:'https://www.ikea.com/us/en/images/products/billy-bookcase-white__1237507_pe917999_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 39%', materials:['fsc','recyclable']},
+      {name:'MALM', variant:'Bed frame · Repainted · New hardware · Like new', type:'refurb', eco:6.2, price:2000, saving:1000, co2:26, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__0800857_ph163673_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 33%', materials:['recyclable']},
+      {name:'MÖRBYLÅNGA', variant:'Oak table · Restored surface · New finish', type:'refurb', eco:6.0, price:5500, saving:2500, co2:44, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 31%', materials:['fsc']},
+      {name:'POÄNG', variant:'Armchair · New seat cushion · Professionally cleaned', type:'refurb', eco:5.8, price:750, saving:450, co2:9, img:'https://www.ikea.com/us/en/images/products/poaeng-armchair-birch-veneer-knisa-light-beige__0837295_pe666935_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 38%', materials:['fsc','gots']},
+      // ── Eco-certified new (6) ──
+      {name:'ÄPPLARYD', variant:'3-seat sofa · Eco line · GOTS organic cotton · 204×94 cm', type:'eco', eco:9.2, price:11499, saving:0, co2:28, img:'https://www.ikea.com/us/en/images/products/aepplaryd-sofa-lejde-gray-black__0992907_pe820325_s5.jpg?f=l', badge:'Eco New', materials:['gots','fsc','recyclable']},
+      {name:'INDUSTRIELL', variant:'Solid oak dining table · FSC certified · 180×90 cm', type:'eco', eco:8.6, price:9995, saving:0, co2:21, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'GJÖRA', variant:'Solid birch bed frame · FSC certified · 160×200 cm', type:'eco', eco:8.1, price:5995, saving:0, co2:18, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'BILLY', variant:'Bookcase · Sustainably sourced birch · 80×202 cm', type:'eco', eco:7.7, price:1295, saving:0, co2:9, img:'https://www.ikea.com/us/en/images/products/kallax-shelf-unit-white__1113779_pe871547_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'LILLBERG', variant:'Rocking chair · Solid FSC birch · Natural finish', type:'eco', eco:7.3, price:2495, saving:0, co2:7, img:'https://www.ikea.com/us/en/images/products/poaeng-rocking-chair-brown-hillared-anthracite__0497817_pe629338_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio','recyclable']},
+      {name:'ANFALLARE', variant:'Bamboo desk · FSC certified · 140×65 cm', type:'eco', eco:6.9, price:2995, saving:0, co2:8, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc','recyclable']},
     ]
   }
 };
