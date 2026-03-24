@@ -912,16 +912,18 @@ nav {
 </nav>
 
 <!-- ══════════════════════════════════════════ -->
-<!-- PHASE 1: AI CONVERSATION                  -->
+<!-- PHASE 1: PREFERENCE ELICITATION          -->
+<!-- (AI chat for condition='ai',             -->
+<!--  dropdown form for condition='control')  -->
 <!-- ══════════════════════════════════════════ -->
 <main id="mainContent">
-<div id="phase1" role="main" aria-label="Furniture search conversation">
+<div id="phase1" role="main" aria-label="Furniture search">
 
   <div class="p1-hero">
     <div class="p1-hero-text">
-      <div class="p1-eyebrow">Sustainable Shopping Assistant</div>
-      <h1 class="p1-title">Tell us what you need.<br><em>We'll find the greenest way to get it.</em></h1>
-      <p class="p1-sub">Describe your furniture needs in plain language — our AI matches you with new, second-hand, refurbished, and eco-certified options, with real carbon data at every step.</p>
+      <div class="p1-eyebrow">IKEA Furniture Finder</div>
+      <h1 class="p1-title">Tell us what you need.<br><em>We'll help you find the right fit.</em></h1>
+      <p class="p1-sub">Browse new, second-hand, refurbished, and eco-certified furniture — with carbon and price data on every option, so you can compare what matters to you.</p>
     </div>
     <div class="p1-stats" aria-label="Key statistics">
       <div class="p1-stat"><span class="p1-stat-num">-76%</span><span class="p1-stat-label">CO₂ vs new<br>(second-hand)</span></div>
@@ -932,8 +934,8 @@ nav {
 
   <div class="p1-body">
 
-    <!-- LEFT: conversation -->
-    <div class="chat-col" role="region" aria-label="Chat with AI assistant">
+    <!-- ── AI CONDITION: conversational chat ── -->
+    <div id="p1AiCol" class="chat-col" role="region" aria-label="Chat with AI assistant" style="display:none">
 
       <div class="chat-messages" id="chatMessages" role="log" aria-label="Conversation history" aria-live="polite">
         <div class="msg bot" role="article" aria-label="Assistant message">
@@ -957,6 +959,79 @@ nav {
         <button class="chat-send" id="chatSendBtn" onclick="sendMsg()" aria-label="Send message">➤</button>
       </div>
 
+    </div>
+
+    <!-- ── CONTROL CONDITION: standard dropdown form ── -->
+    <div id="p1ControlCol" class="chat-col" role="region" aria-label="Furniture search form" style="display:none">
+      <div style="margin-bottom:20px">
+        <div style="font-family:'Fraunces',serif;font-size:22px;color:rgba(255,255,255,0.92);margin-bottom:6px">What are you looking for?</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5)">Select your preferences to see matching options.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <div>
+          <label for="ctrl-type" style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.55);margin-bottom:7px">Furniture type</label>
+          <select id="ctrl-type" onchange="ctrlUpdate()" aria-label="Furniture type"
+            style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:rgba(255,255,255,0.9);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;outline:none;-webkit-appearance:none">
+            <option value="">— Select —</option>
+            <option value="Sofa">Sofa</option>
+            <option value="Dining table">Dining table</option>
+            <option value="Bed frame">Bed frame</option>
+            <option value="Bookshelf">Bookshelf</option>
+            <option value="Desk">Desk</option>
+            <option value="Chair">Chair</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="ctrl-size" style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.55);margin-bottom:7px">Size</label>
+          <select id="ctrl-size" onchange="ctrlUpdate()" aria-label="Size preference"
+            style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:rgba(255,255,255,0.9);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;outline:none;-webkit-appearance:none">
+            <option value="">— Select —</option>
+            <option value="Small">Small / compact</option>
+            <option value="Medium">Medium (standard)</option>
+            <option value="Large">Large / spacious</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="ctrl-style" style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.55);margin-bottom:7px">Style</label>
+          <select id="ctrl-style" onchange="ctrlUpdate()" aria-label="Style preference"
+            style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:rgba(255,255,255,0.9);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;outline:none;-webkit-appearance:none">
+            <option value="">— Select —</option>
+            <option value="Scandinavian">Scandinavian / Nordic</option>
+            <option value="Modern">Modern minimal</option>
+            <option value="Industrial">Industrial</option>
+            <option value="Traditional">Traditional / classic</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="ctrl-budget" style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.55);margin-bottom:7px">Budget</label>
+          <select id="ctrl-budget" onchange="ctrlUpdate()" aria-label="Budget range"
+            style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:rgba(255,255,255,0.9);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;outline:none;-webkit-appearance:none">
+            <option value="">— Select —</option>
+            <option value="Under 3,000 kr">Under 3,000 kr</option>
+            <option value="3,000 – 8,000 kr">3,000 – 8,000 kr</option>
+            <option value="8,000 – 15,000 kr">8,000 – 15,000 kr</option>
+            <option value="No strict limit">No strict limit</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="ctrl-eco" style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.55);margin-bottom:7px">Sustainability priority</label>
+          <select id="ctrl-eco" onchange="ctrlUpdate()" aria-label="Sustainability priority"
+            style="width:100%;padding:11px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:rgba(255,255,255,0.9);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;outline:none;-webkit-appearance:none">
+            <option value="">— Select —</option>
+            <option value="Second-hand first">Second-hand first</option>
+            <option value="Refurbished first">Refurbished first</option>
+            <option value="Eco-certified new">Eco-certified new</option>
+            <option value="Show all">Show all options</option>
+          </select>
+        </div>
+
+      </div>
     </div>
 
     <!-- RIGHT: requirements + preview -->
@@ -1169,8 +1244,8 @@ nav {
     <main class="p2-main" id="resultsMain">
 
       <div class="results-hdr">
-        <div class="results-title" id="resultsTitle">SÖDERHAMN <em>— and greener alternatives</em></div>
-        <div class="results-count" id="resultsCount" aria-live="polite">Found <strong>10</strong> options · <strong>9</strong> sustainable alternatives</div>
+        <div class="results-title" id="resultsTitle">SÖDERHAMN <em>— and sustainable alternatives</em></div>
+        <div class="results-count" id="resultsCount" aria-live="polite">Showing <strong>10</strong> options</div>
       </div>
 
       <div class="eco-banner" role="complementary" aria-label="Sustainability impact summary">
@@ -1178,93 +1253,23 @@ nav {
           💡 Choosing second-hand or refurbished over brand new reduces CO₂ by up to <strong>47 kg</strong> — equivalent to driving about <strong>200 km</strong>
         </div>
         <div class="eco-banner-stats" aria-hidden="true">
-          <div class="ebs"><span class="ebs-num">9</span><span class="ebs-label">eco options</span></div>
+          <div class="ebs"><span class="ebs-num">10</span><span class="ebs-label">total options</span></div>
           <div class="ebs"><span class="ebs-num">-60%</span><span class="ebs-label">max saving</span></div>
           <div class="ebs"><span class="ebs-num" id="maxCo2Banner">47 kg</span><span class="ebs-label">max CO₂ saved</span></div>
         </div>
       </div>
 
-      <!-- Primary product -->
-      <div class="section-wrap">
-        <div class="section-hd">You searched for · Best match</div>
-
-        <article class="primary-card" aria-label="Primary product recommendation">
-          <div class="pc-img">
-            <img src="https://www.ikea.com/us/en/images/products/soederhamn-sofa-fridtuna-dark-gray__1057767_pe848961_s5.jpg?f=xl" alt="SÖDERHAMN sofa" class="prod-img" id="primaryImg">
-            <div class="pc-tag">Brand New</div>
-          </div>
-          <div class="pc-body">
-            <div class="pc-name" id="primaryName">SÖDERHAMN</div>
-            <div class="pc-variant" id="primaryVariant">3-seat sofa, Fridtuna dark grey · 198×96 cm</div>
-            <div class="pc-specs">
-              <span class="spec-chip">🌲 FSC certified pine</span>
-              <span class="spec-chip">Polyester fabric</span>
-              <span class="spec-chip">3–5 days delivery</span>
-              <span class="spec-chip">10-year guarantee</span>
-            </div>
-
-            <div class="eco-score-row" aria-label="Eco score breakdown">
-              <div class="eco-dial" aria-hidden="true">
-                <svg width="48" height="48" viewBox="0 0 48 48">
-                  <circle cx="24" cy="24" r="18" fill="none" stroke="#E2DAC8" stroke-width="5"/>
-                  <circle cx="24" cy="24" r="18" fill="none" stroke="#C4621A" stroke-width="5" stroke-dasharray="113.1" stroke-dashoffset="65.6" stroke-linecap="round"/>
-                </svg>
-                <div class="eco-dial-num">4.2</div>
-              </div>
-              <div class="eco-score-info">
-                <div class="eco-score-ttl">Eco score 4.2 / 10 <span aria-label="estimated">(est.)</span></div>
-                <div class="eco-score-sub">FSC wood but petroleum-based polyester fabric · higher production emissions</div>
-              </div>
-              <button class="eco-score-link" onclick="toggleBd()" aria-expanded="false" aria-controls="bdPanel">Breakdown ▾</button>
-            </div>
-
-            <div class="breakdown-panel" id="bdPanel" role="region" aria-label="Eco score breakdown details">
-              <div class="bd-row"><span class="bd-label">Raw material sourcing</span><div class="bd-bar" aria-hidden="true"><div class="bd-fill" style="width:60%;background:var(--sage-light)"></div></div><span class="bd-val">6.0</span></div>
-              <div class="bd-row"><span class="bd-label">Production emissions</span><div class="bd-bar" aria-hidden="true"><div class="bd-fill" style="width:30%;background:var(--ref)"></div></div><span class="bd-val">3.0</span></div>
-              <div class="bd-row"><span class="bd-label">Fabric sustainability</span><div class="bd-bar" aria-hidden="true"><div class="bd-fill" style="width:25%;background:var(--red)"></div></div><span class="bd-val">2.5</span></div>
-              <div class="bd-row"><span class="bd-label">Packaging & transport</span><div class="bd-bar" aria-hidden="true"><div class="bd-fill" style="width:55%;background:var(--sage-light)"></div></div><span class="bd-val">5.5</span></div>
-              <div class="bd-row"><span class="bd-label">Product recyclability</span><div class="bd-bar" aria-hidden="true"><div class="bd-fill" style="width:40%;background:var(--sage)"></div></div><span class="bd-val">4.0</span></div>
-              <div class="eco-methodology-inline">
-                ⚠️ Eco scores are estimated prototype values based on product category benchmarks. Production release would use audited lifecycle assessment data per SKU.
-              </div>
-            </div>
-
-            <div class="pc-price-row">
-              <div class="pc-price" id="primaryPrice">7,995 kr</div>
-              <button class="btn-wish" aria-label="Add to wishlist">♡</button>
-              <button class="btn-cart" id="primaryCartBtn" onclick="addCart('SÖDERHAMN (New)',7995,'New','')" aria-label="Add SÖDERHAMN to cart">🛒 Add to cart</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- CO2 comparison -->
-        <div class="co2-widget" role="region" aria-label="Carbon comparison">
-          <div class="co2-title">🌍 Same sofa — carbon comparison by choice</div>
-          <div class="co2-bars">
-            <div class="co2-row hi"><span class="co2-lbl">Brand new (current)</span><div class="co2-track" aria-hidden="true"><div class="co2-fill" style="width:100%;background:#C41A1A"></div></div><span class="co2-val">62 kg CO₂</span></div>
-            <div class="co2-row"><span class="co2-lbl">Eco-certified new</span><div class="co2-track" aria-hidden="true"><div class="co2-fill" style="width:55%;background:var(--sage-light)"></div></div><span class="co2-val">34 kg CO₂</span></div>
-            <div class="co2-row"><span class="co2-lbl">Refurbished</span><div class="co2-track" aria-hidden="true"><div class="co2-fill" style="width:32%;background:var(--sage)"></div></div><span class="co2-val">20 kg CO₂</span></div>
-            <div class="co2-row hi"><span class="co2-lbl">Second-hand ✦ Best</span><div class="co2-track" aria-hidden="true"><div class="co2-fill" style="width:24%;background:var(--forest)"></div></div><span class="co2-val">15 kg CO₂</span></div>
-          </div>
-          <div class="co2-note">CO₂ figures are estimates based on product lifecycle analysis benchmarks for this furniture category. Individual product figures vary by material, origin, and transport distance.</div>
-        </div>
-      </div>
-
-      <!-- Alternatives -->
+      <!-- Flat grid — all 10 products including brand new -->
       <div class="alts-section">
-        <div class="alt-hl">
-          <div class="alt-hl-top"><span style="font-size:18px" aria-hidden="true">🌿</span><h2>Greener ways to get this sofa</h2></div>
-          <p>Second-hand, refurbished, and eco-certified alternatives — same quality, lower footprint.</p>
-        </div>
-
-        <div class="alt-tabs" role="tablist" aria-label="Filter alternatives by type">
-          <button class="alt-tab a-all" role="tab" aria-selected="true" onclick="filterAlts('all',this)">All (9)</button>
+        <div class="alt-tabs" role="tablist" aria-label="Filter by type">
+          <button class="alt-tab a-all" role="tab" aria-selected="true" onclick="filterAlts('all',this)">All (10)</button>
+          <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('new',this)">🆕 Brand new (1)</button>
           <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('secondhand',this)">♻️ Second-hand (3)</button>
           <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('refurb',this)">🔧 Refurbished (3)</button>
           <button class="alt-tab" role="tab" aria-selected="false" onclick="filterAlts('eco',this)">🌿 Eco-certified new (3)</button>
         </div>
 
-        <div class="alt-grid" id="altGrid" role="list" aria-label="Alternative products" aria-live="polite"></div>
+        <div class="alt-grid" id="altGrid" role="list" aria-label="All products" aria-live="polite"></div>
       </div>
     </main>
   </div>
@@ -1426,6 +1431,24 @@ const CATALOG = {
 };
 
 // ═══════════════════════════════════════════
+// CONDITION ASSIGNMENT (A/B split)
+// ═══════════════════════════════════════════
+// Conditions: 'ai' = AI-assisted chat (Phase 1 chatbot + eco-ranked grid)
+//             'control' = standard dropdowns (Phase 1 form + price-sorted grid)
+// Assignment is random 50/50 and persisted in sessionStorage so it survives
+// page reloads within the same session but resets for new participants.
+function assignCondition() {
+  let c = sessionStorage.getItem('study_condition');
+  if (!c) {
+    c = Math.random() < 0.5 ? 'ai' : 'control';
+    sessionStorage.setItem('study_condition', c);
+    sessionStorage.setItem('study_session_start', Date.now());
+  }
+  return c;
+}
+const STUDY_CONDITION = assignCondition(); // 'ai' | 'control'
+
+// ═══════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════
 const reqs = {type:null, size:null, style:null, budget:null, eco:null};
@@ -1437,10 +1460,14 @@ let activeTabFilter  = 'all';
 let activeMinEco     = 0;
 let activeMinPrice   = 0;
 let activeMaxPrice   = 999999;
-let activeSortVal    = 'eco';
+// Default sort: 'eco' for AI condition, 'price-asc' for control (neutral default)
+let activeSortVal    = STUDY_CONDITION === 'ai' ? 'eco' : 'price-asc';
 let activeMaterials  = new Set(['fsc','gots']); // default checked
 
 let aiReady          = false;
+// Track AI chat engagement for logging
+let aiChatMessageCount = 0;
+let phase2StartTime    = null;
 
 // ═══════════════════════════════════════════
 // LIVE REGION HELPER (a11y)
@@ -1517,6 +1544,26 @@ Available alternatives include:
 - Eco-certified new has the best materials (FSC, GOTS organic cotton)
 
 Keep answers concise (under 80 words). Be helpful and honest. No markdown.`;
+}
+
+// ═══════════════════════════════════════════
+// CONTROL CONDITION: dropdown form handler
+// ═══════════════════════════════════════════
+function ctrlUpdate() {
+  const type   = document.getElementById('ctrl-type')?.value   || null;
+  const size   = document.getElementById('ctrl-size')?.value   || null;
+  const style  = document.getElementById('ctrl-style')?.value  || null;
+  const budget = document.getElementById('ctrl-budget')?.value || null;
+  const eco    = document.getElementById('ctrl-eco')?.value    || null;
+
+  if (type)   { reqs.type   = type;   setReqItem('type',   type); }
+  if (size)   { reqs.size   = size;   setReqItem('size',   size); }
+  if (style)  { reqs.style  = style;  setReqItem('style',  style); }
+  if (budget) { reqs.budget = budget; setReqItem('budget', budget); }
+  if (eco)    { reqs.eco    = eco;    setReqItem('eco',    eco); }
+
+  updateProgress();
+  if (reqs.type) updateMiniCards(0);
 }
 
 // ═══════════════════════════════════════════
@@ -1651,6 +1698,7 @@ async function sendMsg() {
 
   addMsg('user', text);
   showTyping();
+  aiChatMessageCount++; // track engagement for study logging
 
   // Determine which field we're collecting (capture BEFORE incrementing step)
   const fields = ['type','size','style','budget','eco'];
@@ -1828,6 +1876,7 @@ function loadFromUrl() {
 function goToPhase2() {
   hideMobileCta();
   buildContextPills();
+  phase2StartTime = Date.now(); // start timing Phase 2 for data capture
 
   const typeMap = {'Sofa':'Sofa','sofa':'Sofa','couch':'Sofa','Dining table':'Dining table','table':'Dining table','Bed frame':'Bed frame','bed':'Bed frame','Bookshelf':'Bookshelf','shelf':'Bookshelf','Storage unit':'Storage unit','Desk':'Desk','desk':'Desk','Chair':'Chair','chair':'Chair'};
   const resolvedType = typeMap[reqs.type] || reqs.type || 'Sofa';
@@ -1863,6 +1912,7 @@ function backToPhase1() {
 
   step = 0;
   reqs.type = reqs.size = reqs.style = reqs.budget = reqs.eco = null;
+  activeSortVal = STUDY_CONDITION === 'ai' ? 'eco' : 'price-asc';
   ['type','size','style','budget','eco'].forEach(k => {
     document.getElementById('req-'+k)?.classList.remove('filled');
     const v = document.getElementById('rv-'+k);
@@ -1873,21 +1923,28 @@ function backToPhase1() {
   document.getElementById('confirmBtn').classList.remove('ready');
   document.getElementById('confirmBtn').setAttribute('aria-disabled','true');
   hideMobileCta();
-  document.getElementById('chatMessages').innerHTML = '';
 
-  addMsg('bot', "Hi! I'm your IKEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
-
-  const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
-  const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
-  const el = document.getElementById('quickChips');
-  el.innerHTML = '';
-  initial.forEach((t,i) => {
-    const s = document.createElement('button');
-    s.className = 'qchip';
-    s.textContent = icons[i]+' '+t.charAt(0).toUpperCase()+t.slice(1);
-    s.onclick = () => quickReply(t);
-    el.appendChild(s);
-  });
+  if (STUDY_CONDITION === 'ai') {
+    document.getElementById('chatMessages').innerHTML = '';
+    addMsg('bot', "Hi! I'm your IKEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
+    const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
+    const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
+    const el = document.getElementById('quickChips');
+    el.innerHTML = '';
+    initial.forEach((t,i) => {
+      const s = document.createElement('button');
+      s.className = 'qchip';
+      s.textContent = icons[i]+' '+t.charAt(0).toUpperCase()+t.slice(1);
+      s.onclick = () => quickReply(t);
+      el.appendChild(s);
+    });
+  } else {
+    // Reset the control dropdowns
+    ['ctrl-type','ctrl-size','ctrl-style','ctrl-budget','ctrl-eco'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  }
 
   document.querySelectorAll('.mini-card').forEach(c => c.classList.remove('matched'));
   document.getElementById('floatMsgs').innerHTML = '';
@@ -1914,7 +1971,7 @@ function renderPhase2(type) {
   activeMinEco     = 0;
   activeMinPrice   = 0;
   activeMaxPrice   = 999999;
-  activeSortVal    = 'eco';
+  activeSortVal    = STUDY_CONDITION === 'ai' ? 'eco' : 'price-asc';
   activeMaterials  = new Set(['fsc','gots']);
 
   // Reset UI controls
@@ -1933,21 +1990,52 @@ function renderPhase2(type) {
   if (priceMax) priceMax.value = 15000;
 
   // Update primary product panel
-  document.getElementById('primaryName').textContent = cat.primaryName;
-  document.getElementById('primaryVariant').textContent = cat.primaryVariant;
-  document.getElementById('primaryImg').src = cat.primaryImg;
-  document.getElementById('primaryImg').alt = cat.primaryName;
-  const primaryBtn = document.getElementById('primaryCartBtn');
-  if (primaryBtn) {
-    primaryBtn.setAttribute('aria-label', `Add ${cat.primaryName} to cart`);
-    primaryBtn.onclick = () => addCart(cat.primaryName, cat.products[0]?.price||7995, 'New', cat.primaryImg);
-  }
   document.getElementById('resultsTitle').innerHTML = cat.resultTitle;
 
-  // Build alt grid
+  // Build flat grid — brand-new card first, then the 9 alternatives
   const grid = document.getElementById('altGrid');
   grid.innerHTML = '';
 
+  // ── Brand-new card (same layout as alt-cards) ──
+  const newCard = document.createElement('article');
+  newCard.className = 'alt-card';
+  newCard.setAttribute('role', 'listitem');
+  newCard.setAttribute('aria-label', `${cat.primaryName} — Brand new — standard price`);
+  newCard.dataset.type    = 'new';
+  newCard.dataset.eco     = '4.2';
+  newCard.dataset.price   = cat.products[0]?.price ? (cat.products[0].price + cat.products[0].saving) : 7995;
+  newCard.dataset.saving  = '0';
+  newCard.dataset.co2     = '0';
+  newCard.dataset.materials = 'fsc';
+  const newPrice = cat.products[0] ? (cat.products[0].price + cat.products[0].saving) : 7995;
+  newCard.innerHTML = `
+    <div class="ac-img" style="background:linear-gradient(135deg,#e8e4dc,#d4cfc6)" aria-hidden="true">
+      <img src="${cat.primaryImg}" alt="${cat.primaryName}" loading="lazy">
+      <div class="ac-badge" style="background:var(--new-c)">Brand new</div>
+    </div>
+    <div class="ac-body">
+      <div class="ac-name">${cat.primaryName}</div>
+      <div class="ac-variant">${cat.primaryVariant}</div>
+      <div class="vs-box" aria-label="Standard option">
+        <div class="vs-row"><span class="vs-lbl">Full manufacturer guarantee</span><span class="vs-val">10 years</span></div>
+        <div class="vs-row"><span class="vs-lbl">Eco score</span><span class="vs-val" style="color:var(--ref)">4.2 / 10</span></div>
+      </div>
+      <div class="eco-mini" aria-label="Eco score 4.2 out of 10">
+        <span class="eco-mini-lbl">Eco</span>
+        <div class="eco-mini-bar" aria-hidden="true"><div class="eco-mini-fill" style="width:42%;background:var(--ref)"></div></div>
+        <span class="eco-mini-num" style="color:var(--ref)">4.2</span>
+      </div>
+      <div class="eco-tags" aria-hidden="true"><span class="eco-tag">FSC certified</span><span class="eco-tag">Full guarantee</span><span class="eco-tag">New stock</span></div>
+      <div class="cond-row">Brand new · Full 10-year guarantee</div>
+      <div class="ac-price-row">
+        <div><span class="ac-price">${newPrice.toLocaleString()} kr</span></div>
+        <button class="ac-add" onclick="addCart('${cat.primaryName}',${newPrice},'New','${cat.primaryImg}');event.stopPropagation()" aria-label="Add ${cat.primaryName} to cart">+</button>
+      </div>
+      <div class="stock-row"><span class="stock-loc">📍 Ships online · 3–5 days</span><button class="stock-act" aria-label="View details">View details →</button></div>
+    </div>`;
+  grid.appendChild(newCard);
+
+  // ── Alternative cards (second-hand / refurb / eco-new) ──
   cat.products.forEach((p, i) => {
     const isSH  = p.type === 'secondhand';
     const isRef = p.type === 'refurb';
@@ -2009,7 +2097,7 @@ function renderPhase2(type) {
   });
 
   const countEl = document.getElementById('resultsCount');
-  if (countEl) countEl.innerHTML = `Found <strong>${cat.products.length + 1}</strong> options · <strong>${cat.products.length}</strong> sustainable alternatives`;
+  if (countEl) countEl.innerHTML = `Showing all <strong>${cat.products.length + 1}</strong> options including brand new`;
 
   const bestPick = cat.products[0];
   document.getElementById('ecoBannerMsg').innerHTML =
@@ -2337,29 +2425,79 @@ function addCart(name, price, badge, img) {
 
 async function recordOrderStats() {
   try {
-    let stats = { orders:0, revenue:0, co2Saved:0, byCategory:{}, byType:{}, history:[] };
+    let stats = {
+      orders:0, revenue:0, co2Saved:0,
+      byCategory:{}, byType:{}, byCheckoutCategory:{},
+      // Study-specific aggregates
+      byCondition:{ ai:{ orders:0, sustainableCount:0, totalItems:0 }, control:{ orders:0, sustainableCount:0, totalItems:0 } },
+      history:[]
+    };
     try {
       const existing = await window.storage.get('ikea-sustainable-stats', true);
       if (existing) stats = JSON.parse(existing.value);
     } catch(e) {}
 
-    stats.orders   = (stats.orders   || 0) + 1;
-    stats.revenue  = (stats.revenue  || 0) + cartItems.reduce((s,i) => s+i.price, 0);
-    stats.co2Saved = (stats.co2Saved || 0) + cartItems.reduce((s,i) => s+i.co2, 0);
+    const total   = cartItems.reduce((s,i) => s+i.price, 0);
+    const co2     = cartItems.reduce((s,i) => s+i.co2, 0);
 
+    stats.orders   = (stats.orders   || 0) + 1;
+    stats.revenue  = (stats.revenue  || 0) + total;
+    stats.co2Saved = (stats.co2Saved || 0) + co2;
+
+    // Per-item category and badge tallies (existing)
     cartItems.forEach(item => {
       stats.byCategory[item.category] = (stats.byCategory[item.category] || 0) + 1;
       stats.byType[item.badge]        = (stats.byType[item.badge]        || 0) + 1;
     });
 
-    stats.history = stats.history || [];
-    // Also track the search category as the primary checkout category
     const checkoutCat = reqs.type || 'Furniture';
     stats.byCheckoutCategory = stats.byCheckoutCategory || {};
     stats.byCheckoutCategory[checkoutCat] = (stats.byCheckoutCategory[checkoutCat] || 0) + 1;
 
-    stats.history.push({ ts:Date.now(), items:cartItems.length, total:cartItems.reduce((s,i)=>s+i.price,0), categories:cartItems.map(i=>i.category), types:cartItems.map(i=>i.badge) });
-    if (stats.history.length > 200) stats.history = stats.history.slice(-200);
+    // ── Study-specific data capture ──────────────────────────────────────
+    // Count items that are a sustainable tier (second-hand, refurb, or eco-new)
+    const sustainableTiers = ['Second-hand', 'Refurbished', 'Eco New'];
+    const sustainableItems = cartItems.filter(i => sustainableTiers.some(t => (i.badge||'').includes(t.split(' ')[0])));
+    const sustainableCount = sustainableItems.length;
+
+    // Per-condition aggregates
+    stats.byCondition = stats.byCondition || { ai:{ orders:0, sustainableCount:0, totalItems:0 }, control:{ orders:0, sustainableCount:0, totalItems:0 } };
+    const cond = STUDY_CONDITION;
+    stats.byCondition[cond] = stats.byCondition[cond] || { orders:0, sustainableCount:0, totalItems:0 };
+    stats.byCondition[cond].orders         += 1;
+    stats.byCondition[cond].sustainableCount += sustainableCount;
+    stats.byCondition[cond].totalItems     += cartItems.length;
+
+    // Detailed session record
+    const sessionDurationSec = phase2StartTime ? Math.round((Date.now() - phase2StartTime) / 1000) : null;
+    const record = {
+      ts:            Date.now(),
+      condition:     STUDY_CONDITION,                          // 'ai' | 'control'
+      // Product choices (the core dependent variable)
+      items:         cartItems.length,
+      sustainableCount,
+      sustainableRate: cartItems.length > 0 ? +(sustainableCount / cartItems.length).toFixed(2) : 0,
+      chosenTiers:   cartItems.map(i => i.badge || 'Unknown'), // e.g. ['Second-hand','Eco New']
+      chosenProducts: cartItems.map(i => ({ name: i.name, badge: i.badge, price: i.price, co2: i.co2, category: i.category })),
+      // Search preferences
+      searchType:    reqs.type    || null,
+      searchSize:    reqs.size    || null,
+      searchStyle:   reqs.style   || null,
+      searchBudget:  reqs.budget  || null,
+      searchEco:     reqs.eco     || null,
+      // AI engagement (only meaningful in 'ai' condition)
+      aiChatUsed:    aiChatMessageCount > 0,
+      aiChatMsgCount: aiChatMessageCount,
+      // Timing
+      phase2DurationSec: sessionDurationSec,
+      // Financials
+      total,
+      co2Saved:      co2
+    };
+
+    stats.history = stats.history || [];
+    stats.history.push(record);
+    if (stats.history.length > 500) stats.history = stats.history.slice(-500);
 
     await window.storage.set('ikea-sustainable-stats', JSON.stringify(stats), true);
   } catch(e) {
@@ -2565,6 +2703,20 @@ document.addEventListener('keydown', e => {
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navCart').onclick = openCart;
+
+  // Show the correct Phase 1 input column based on condition assignment
+  if (STUDY_CONDITION === 'ai') {
+    document.getElementById('p1AiCol').style.display = '';
+    // AI banner stays available (shown on first successful API call)
+  } else {
+    document.getElementById('p1ControlCol').style.display = '';
+    // Hide AI-specific elements in control condition
+    const banner = document.getElementById('aiBanner');
+    if (banner) banner.style.display = 'none';
+    const navStats = document.getElementById('navStats');
+    // Stats button still visible to researcher — no change needed
+  }
+
   // Load state from URL if present (shareable links)
   loadFromUrl();
 });
@@ -2633,6 +2785,9 @@ function renderStats(stats) {
   const categories = stats.byCategory || {};
   const types      = stats.byType || {};
   const history    = (stats.history || []).slice().reverse(); // newest first
+  const conds      = stats.byCondition || {};
+  const aiData     = conds.ai      || { orders:0, sustainableCount:0, totalItems:0 };
+  const ctrlData   = conds.control || { orders:0, sustainableCount:0, totalItems:0 };
 
   // Category bars
   const catEntries = Object.entries(categories).sort((a,b) => b[1]-a[1]);
@@ -2651,6 +2806,10 @@ function renderStats(stats) {
   // Summary KPIs
   const avgOrderValue = stats.orders > 0 ? Math.round(stats.revenue / stats.orders) : 0;
   const avgCo2        = stats.orders > 0 ? Math.round(stats.co2Saved / stats.orders) : 0;
+
+  // Per-condition sustainable rates
+  const aiRate   = aiData.totalItems   > 0 ? Math.round(aiData.sustainableCount   / aiData.totalItems   * 100) : null;
+  const ctrlRate = ctrlData.totalItems > 0 ? Math.round(ctrlData.sustainableCount / ctrlData.totalItems * 100) : null;
 
   return `
     <!-- Header actions -->
@@ -2686,6 +2845,34 @@ function renderStats(stats) {
       </div>
     </div>
 
+    <!-- ── KEY RESEARCH OUTCOME: per-condition comparison ── -->
+    <div class="stat-section-title">🔬 Condition comparison (primary outcome)</div>
+    <div class="stat-card" style="padding:18px 20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
+        <div style="background:#f0f4ff;border-radius:10px;padding:14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#1a5c9e;margin-bottom:6px">AI-assisted</div>
+          <div style="font-size:28px;font-weight:700;color:#1a5c9e;letter-spacing:-1px">${aiRate !== null ? aiRate+'%' : '—'}</div>
+          <div style="font-size:12px;color:#666;margin-top:2px">sustainable rate</div>
+          <div style="font-size:11px;color:#888;margin-top:6px">${aiData.orders} order${aiData.orders!==1?'s':''} · ${aiData.sustainableCount} sustainable items of ${aiData.totalItems}</div>
+        </div>
+        <div style="background:#f5f5f5;border-radius:10px;padding:14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#555;margin-bottom:6px">Control</div>
+          <div style="font-size:28px;font-weight:700;color:#444;letter-spacing:-1px">${ctrlRate !== null ? ctrlRate+'%' : '—'}</div>
+          <div style="font-size:12px;color:#666;margin-top:2px">sustainable rate</div>
+          <div style="font-size:11px;color:#888;margin-top:6px">${ctrlData.orders} order${ctrlData.orders!==1?'s':''} · ${ctrlData.sustainableCount} sustainable items of ${ctrlData.totalItems}</div>
+        </div>
+      </div>
+      ${aiRate !== null && ctrlRate !== null
+        ? `<div style="background:${aiRate > ctrlRate ? '#f0f9f4' : '#fff8f0'};border-radius:8px;padding:10px 12px;font-size:12px;color:${aiRate > ctrlRate ? '#2d6a4f' : '#b5540a'}">
+            ${aiRate > ctrlRate
+              ? `↑ AI condition shows ${aiRate - ctrlRate} percentage-point higher sustainable choice rate`
+              : aiRate < ctrlRate
+                ? `↓ Control condition shows ${ctrlRate - aiRate} percentage-point higher sustainable choice rate`
+                : `→ Both conditions show equal sustainable choice rates`}
+           </div>`
+        : '<div style="font-size:12px;color:#aaa;text-align:center;padding:8px 0">Awaiting data from both conditions</div>'}
+    </div>
+
     <!-- Category breakdown -->
     <div class="stat-section-title">📦 Categories selected at checkout</div>
     <div class="stat-card" style="padding:18px 20px 8px">
@@ -2716,31 +2903,37 @@ function renderStats(stats) {
           </div>`).join('')}
     </div>
 
-    <!-- Order history -->
+    <!-- Order history with condition column -->
     <div class="stat-section-title">🕐 Recent checkouts (newest first)</div>
     <div class="stat-card" style="padding:12px 20px">
       ${history.length === 0
         ? '<div style="color:#aaa;font-size:13px;text-align:center;padding:12px 0">No history yet</div>'
-        : history.slice(0,15).map(h => {
-            const d   = new Date(h.ts);
+        : history.slice(0,20).map(h => {
+            const d    = new Date(h.ts);
             const date = d.toLocaleDateString('sv-SE');
             const time = d.toLocaleTimeString('sv-SE', {hour:'2-digit',minute:'2-digit'});
-            const cats = [...new Set(h.categories||[])].join(', ') || '—';
-            const types = [...new Set(h.types||[])].join(', ') || '—';
+            // Support both old-format records (no condition) and new
+            const cond  = h.condition || '—';
+            const sRate = h.sustainableRate != null ? Math.round(h.sustainableRate * 100) + '%' : '—';
+            const aiMsg = h.aiChatMsgCount != null ? `${h.aiChatMsgCount} msg${h.aiChatMsgCount!==1?'s':''}` : '—';
+            const tiers = (h.chosenTiers || (h.types || [])).join(', ') || '—';
             return `
               <div class="stat-history-row">
-                <div class="stat-dot"></div>
+                <div class="stat-dot" style="background:${cond==='ai'?'#1a5c9e':cond==='control'?'#888':'#ccc'}"></div>
                 <div style="flex:1">
-                  <div style="font-weight:600;color:#222;margin-bottom:2px">${h.items} item${h.items!==1?'s':''} · ${(h.total||0).toLocaleString('sv-SE')} kr</div>
-                  <div style="color:#888">${cats}</div>
-                  <div style="color:#aaa;font-size:11px;margin-top:2px">${types} · ${date} ${time}</div>
+                  <div style="font-weight:600;color:#222;margin-bottom:2px;display:flex;align-items:center;gap:8px">
+                    ${h.items} item${h.items!==1?'s':''} · ${(h.total||0).toLocaleString('sv-SE')} kr
+                    <span style="font-size:10px;padding:1px 7px;border-radius:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;background:${cond==='ai'?'#dceeff':cond==='control'?'#eee':'#f5f5f5'};color:${cond==='ai'?'#1a5c9e':'#555'}">${cond}</span>
+                  </div>
+                  <div style="color:#666;font-size:12px">Sustainable: ${sRate} · AI chat: ${aiMsg}</div>
+                  <div style="color:#aaa;font-size:11px;margin-top:2px">${tiers} · ${date} ${time}</div>
                 </div>
               </div>`;
           }).join('')}
     </div>
 
     <div style="font-size:11px;color:#bbb;text-align:center;margin-top:16px;padding-bottom:8px">
-      Data stored in shared session storage · max 200 records retained
+      Data stored in shared session storage · max 500 records retained
     </div>
   `;
 }
