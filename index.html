@@ -411,12 +411,12 @@ nav {
 
 .confirm-btn {
   width:100%;
-  padding:13px;
+  padding:17px;
   background:var(--yellow);
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   font-family:'DM Sans', sans-serif;
-  font-size:14px;
+  font-size:16px;
   font-weight:700;
   color:var(--blue);
   cursor:pointer;
@@ -425,11 +425,10 @@ nav {
   align-items:center;
   justify-content:center;
   gap:8px;
-  opacity:0.4;
-  pointer-events:none;
+  letter-spacing:0.2px;
+  box-shadow:0 4px 20px rgba(255,218,26,0.25);
 }
-.confirm-btn.ready { opacity:1; pointer-events:all; }
-.confirm-btn.ready:hover { background:white; transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.25); }
+.confirm-btn:hover { background:white; transform:translateY(-2px); box-shadow:0 8px 28px rgba(0,0,0,0.22); }
 
 
 
@@ -789,7 +788,7 @@ nav {
   .p1-body { grid-template-columns:1fr; grid-template-rows:auto auto; flex:none; height:auto; }
   .req-col { order:-1; display:flex; flex-direction:column; max-height:none; overflow-y:visible; padding:16px 16px 12px; position:static; background:rgba(255,255,255,0.04); gap:12px; border-bottom:1px solid rgba(255,255,255,0.07); border-right:none; }
   .req-grid { grid-template-columns:repeat(3,1fr); gap:8px; }
-  #confirmBtn { display:none; }
+  #confirmBtnWrap { display:none !important; }
   .chat-col { order:0; padding:16px 16px 80px; border-right:none; border-bottom:none; }
   .chat-messages { max-height:320px; overflow-y:auto; }
   .p1-hero { flex-direction:column; align-items:flex-start; padding:20px 16px 16px; gap:16px; }
@@ -1110,12 +1109,16 @@ nav {
         </div>
       </div>
 
-      <button class="confirm-btn" id="confirmBtn" onclick="goToPhase2()" aria-label="See full product results" aria-disabled="true">
-        ✓ See full results
-      </button>
-
     </div>
   </div>
+
+  <!-- Confirm button — shown below the active input column once all 5 questions answered -->
+  <div id="confirmBtnWrap" style="padding:0 48px 32px;display:none">
+    <button class="confirm-btn" id="confirmBtn" onclick="goToPhase2()" aria-label="See full product results" aria-disabled="true">
+      ✓ See full results
+    </button>
+  </div>
+
 </div>
 
 <!-- ══════════════════════════════════════════ -->
@@ -1349,26 +1352,25 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s',
     resultTitle:'MÖRBYLÅNGA <em>— and greener alternatives</em>',
     products:[
-      // ── Second-hand (5) ──
+      // ── Second-hand (4) ──
       {name:'MÖRBYLÅNGA', variant:'Oak veneer dining table · Used Grade A · 220×100 cm', type:'secondhand', eco:8.1, price:3800, saving:4200, co2:52, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 52%', bestPick:true, materials:['fsc']},
       {name:'LISABO', variant:'Ash veneer dining table · Used Grade B · 140×78 cm', type:'secondhand', eco:7.6, price:1200, saving:1400, co2:38, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['fsc']},
-      {name:'EKEDALEN', variant:'Extendable oak table · Used Grade A · 120–180 cm', type:'secondhand', eco:7.3, price:2200, saving:2600, co2:41, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['fsc']},
-      {name:'INGATORP', variant:'Extendable table · White · Used Grade A · 155–215 cm', type:'secondhand', eco:7.1, price:1800, saving:2195, co2:35, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 55%', materials:['fsc']},
-      // ── Refurbished (5) ──
-      {name:'MÖRBYLÅNGA', variant:'Oak veneer · Professionally restored · New finish', type:'refurb', eco:7.0, price:5500, saving:2500, co2:44, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 31%', materials:['fsc','recyclable']},
-      {name:'LISABO', variant:'Ash veneer · Sanded & re-oiled · Like new', type:'refurb', eco:6.7, price:1800, saving:800, co2:31, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__1470751_pe996928_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 31%', materials:['fsc']},
-      {name:'NACKANÄS', variant:'Solid pine table · Refinished · Sustainable pine', type:'refurb', eco:6.4, price:3200, saving:1100, co2:28, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 26%', materials:['fsc']},
-      {name:'EKEDALEN', variant:'Oak table · Recoated top · New legs · 120–180 cm', type:'refurb', eco:6.2, price:2800, saving:1395, co2:26, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 33%', materials:['fsc','bio']},
-      // ── Eco-certified new (6) ──
-      {name:'INDUSTRIELL', variant:'Solid oak dining table · FSC certified · 180×90 cm', type:'eco', eco:9.0, price:9995, saving:0, co2:21, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
-      {name:'GAMLEBY', variant:'Solid pine · Water-based lacquer · 150×75 cm', type:'eco', eco:8.5, price:4995, saving:0, co2:18, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__1470751_pe996928_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
-      {name:'SANDSBERG', variant:'Bamboo top · Powder-coated steel · 110×67 cm', type:'eco', eco:8.0, price:2995, saving:0, co2:15, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Eco New', materials:['bio','recyclable']},
+      {name:'EKEDALEN', variant:'Extendable oak table · Used Grade A · 120–180 cm', type:'secondhand', eco:7.3, price:2200, saving:2600, co2:41, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['fsc']},
+      {name:'INGATORP', variant:'Extendable table · White · Used Grade A · 155–215 cm', type:'secondhand', eco:7.1, price:1800, saving:2195, co2:35, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__1470751_pe996928_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 55%', materials:['fsc']},
+      // ── Refurbished (4) ──
+      {name:'MÖRBYLÅNGA', variant:'Oak veneer · Professionally restored · New finish', type:'refurb', eco:7.0, price:5500, saving:2500, co2:44, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 31%', materials:['fsc','recyclable']},
+      {name:'LISABO', variant:'Ash veneer · Sanded & re-oiled · Like new', type:'refurb', eco:6.7, price:1800, saving:800, co2:31, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 31%', materials:['fsc']},
+      {name:'EKEDALEN', variant:'Oak table · Recoated top · New legs · 120–180 cm', type:'refurb', eco:6.2, price:2800, saving:1395, co2:26, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 33%', materials:['fsc','bio']},
+      {name:'INGATORP', variant:'White table · Stripped & repainted · Like new', type:'refurb', eco:5.9, price:2200, saving:1795, co2:22, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__1470751_pe996928_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 45%', materials:['recyclable']},
+      // ── Eco-certified new (4) ──
       {name:'MÖRBYLÅNGA', variant:'Oak veneer · FSC certified · Low-VOC lacquer · 220×100 cm', type:'eco', eco:7.8, price:8995, saving:0, co2:14, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
-    ,
+      {name:'LISABO', variant:'Ash veneer · FSC certified · Water-based finish · 140×78 cm', type:'eco', eco:7.5, price:3495, saving:0, co2:12, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
+      {name:'EKEDALEN', variant:'Solid oak · Extendable · Water-based lacquer · FSC', type:'eco', eco:8.5, price:5995, saving:0, co2:16, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'INDUSTRIELL', variant:'Solid oak dining table · FSC certified · 180×90 cm', type:'eco', eco:9.0, price:9995, saving:0, co2:21, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
       // ── Brand new (4) ──
       {name:'MÖRBYLÅNGA', variant:'Dining table · Oak veneer brown · 220×100 cm · Full warranty', type:'new', eco:4.5, price:7995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__0737110_pe740888_s5.jpg?f=s', badge:'Brand new', materials:['fsc']},
       {name:'LISABO', variant:'Table · Ash veneer · 140×78 cm · Full warranty', type:'new', eco:4.1, price:2495, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__0921113_pe787668_s5.jpg?f=s', badge:'Brand new', materials:['fsc']},
-      {name:'EKEDALEN', variant:'Extendable table · White · 120–180 cm · Full warranty', type:'new', eco:3.8, price:3995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/lisabo-lisabo-table-and-4-chairs-ash-veneer-ash__1470751_pe996928_s5.jpg?f=s', badge:'Brand new', materials:['fsc']},
+      {name:'EKEDALEN', variant:'Extendable table · White · 120–180 cm · Full warranty', type:'new', eco:3.8, price:3995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1143384_pe881487_s5.jpg?f=s', badge:'Brand new', materials:['fsc']},
       {name:'INDUSTRIELL', variant:'Table · Solid oak · 180×90 cm · Full warranty', type:'new', eco:5.3, price:9995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/moerbylanga-table-oak-veneer-brown-stained__1016079_ph174029_s5.jpg?f=s', badge:'Brand new', materials:['fsc','recyclable']}
     ]
   },
@@ -1381,14 +1383,14 @@ const CATALOG = {
       {name:'HEMNES', variant:'Solid pine bed frame · Used Grade A · 160×200 cm', type:'secondhand', eco:7.9, price:1800, saving:2200, co2:39, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0637516_pe698353_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 55%', bestPick:true, materials:['fsc']},
       {name:'MALM', variant:'High gloss white bed frame · Used Grade B · 160×200 cm', type:'secondhand', eco:7.4, price:1400, saving:1600, co2:34, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__0749130_pe745499_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 53%', materials:['recyclable']},
       {name:'TARVA', variant:'Solid pine bed frame · Used Grade A · 140×200 cm', type:'secondhand', eco:7.1, price:950, saving:1050, co2:28, img:'https://www.ikea.com/us/en/images/products/tarva-bed-frame-pine__0637611_pe698421_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 52%', materials:['fsc']},
-      {name:'BRIMNES', variant:'Bed frame with storage · Used Grade B · 160×200 cm', type:'secondhand', eco:6.9, price:1600, saving:1895, co2:31, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0742586_ph156773_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['recyclable']},
+      {name:'HEMNES', variant:'Bed frame · White stain · Used Grade B · 140×200 cm', type:'secondhand', eco:6.9, price:1600, saving:1895, co2:31, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0742586_ph156773_s5.jpg?f=s', badge:'Second-hand', ribbon:'Save 54%', materials:['recyclable']},
       // ── Refurbished (5) ──
       {name:'HEMNES', variant:'Solid pine · Sanded & repainted · Like new', type:'refurb', eco:6.9, price:2800, saving:1200, co2:31, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0800872_ph163685_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 30%', materials:['fsc','bio']},
       {name:'MALM', variant:'High gloss · Repainted · New hardware · Like new', type:'refurb', eco:6.5, price:2000, saving:1000, co2:26, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__0800857_ph163673_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 33%', materials:['recyclable']},
       {name:'TARVA', variant:'Solid pine · Sanded & re-oiled · Minimalist', type:'refurb', eco:6.2, price:1400, saving:600, co2:20, img:'https://www.ikea.com/us/en/images/products/tarva-bed-frame-pine__1102036_pe866857_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 30%', materials:['fsc']},
-      {name:'BRIMNES', variant:'Storage bed · New drawer runners · Repainted', type:'refurb', eco:5.9, price:2200, saving:1295, co2:18, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 37%', materials:['recyclable']},
+      {name:'MALM', variant:'Bed frame · High-gloss white · Drawer base · Refurb', type:'refurb', eco:5.9, price:2200, saving:1295, co2:18, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Refurbished', ribbon:'Save 37%', materials:['recyclable']},
       // ── Eco-certified new (6) ──
-      {name:'GJÖRA', variant:'Solid birch bed frame · FSC certified · 160×200 cm', type:'eco', eco:9.1, price:5995, saving:0, co2:18, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'MALM', variant:'Bed frame · FSC board · Low-emission · 160×200 cm', type:'eco', eco:9.1, price:5995, saving:0, co2:18, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
       {name:'HEMNES', variant:'Solid pine · Water-based stain · FSC · 160×200 cm', type:'eco', eco:8.6, price:3995, saving:0, co2:15, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0742586_ph156773_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
       {name:'NEIDEN', variant:'Solid pine · Minimal frame · FSC certified', type:'eco', eco:8.1, price:1995, saving:0, co2:12, img:'https://www.ikea.com/us/en/images/products/neiden-bed-frame-pine__0749132_pe745501_s5.jpg?f=s', badge:'Eco New', materials:['fsc','recyclable']},
       {name:'TARVA', variant:'Solid pine · Untreated FSC wood · 140×200 cm', type:'eco', eco:7.8, price:2295, saving:0, co2:10, img:'https://www.ikea.com/us/en/images/products/tarva-bed-frame-pine__1102036_pe866857_s5.jpg?f=s', badge:'Eco New', materials:['fsc','bio']},
@@ -1397,7 +1399,7 @@ const CATALOG = {
       {name:'HEMNES', variant:'Bed frame · White stain · Solid pine · 160×200 cm · Full warranty', type:'new', eco:4.8, price:3995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/hemnes-bed-frame-white-stain__0800872_ph163685_s5.jpg?f=s', badge:'Brand new', materials:['fsc']},
       {name:'MALM', variant:'Bed frame · High gloss white · 160×200 cm · Full warranty', type:'new', eco:3.5, price:2995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__0800857_ph163673_s5.jpg?f=s', badge:'Brand new', materials:['recyclable']},
       {name:'TARVA', variant:'Bed frame · Solid pine · 140×200 cm · Full warranty', type:'new', eco:4.2, price:1995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/tarva-bed-frame-pine__1102036_pe866857_s5.jpg?f=s', badge:'Brand new', materials:['fsc']},
-      {name:'GJÖRA', variant:'Bed frame · Solid birch · FSC · 160×200 cm · Full warranty', type:'new', eco:5.6, price:5995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Brand new', materials:['fsc','recyclable']}
+      {name:'MALM', variant:'Bed frame · High gloss white · 160×200 cm · Full warranty', type:'new', eco:5.6, price:5995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/malm-bed-frame-white__1101527_pe866706_s5.jpg?f=s', badge:'Brand new', materials:['fsc','recyclable']}
     ]
   },
   'Bookshelf': {
@@ -1433,27 +1435,26 @@ const CATALOG = {
     primaryImg:'https://www.ikea.com/us/en/images/products/bekant-desk-white__0855220_pe714635_s5.jpg?f=xl',
     resultTitle:'BEKANT <em>— and greener alternatives</em>',
     products:[
-      // ── Second-hand (5) ──
+      // ── Second-hand (4) — row images: A,B,C,D ──
       {name:'ANFALLARE', variant:'Bamboo desk · Used Grade A · 140×65 cm', type:'secondhand', eco:7.8, price:450, saving:550, co2:14, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 55%', bestPick:true, materials:['bio','fsc']},
       {name:'BEKANT', variant:'Sit/stand desk · Used Grade B · 160×80 cm', type:'secondhand', eco:7.4, price:2200, saving:2800, co2:28, img:'https://www.ikea.com/us/en/images/products/bekant-desk-white__1160567_pe888964_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 56%', materials:['recyclable']},
       {name:'ALEX', variant:'Desk with drawers · Used Grade A · 131×60 cm', type:'secondhand', eco:7.1, price:850, saving:650, co2:19, img:'https://www.ikea.com/us/en/images/products/alex-desk-white__0977666_pe813729_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 43%', materials:['recyclable']},
       {name:'LAGKAPTEN', variant:'Desk top + legs · Bamboo · Used Grade A · 140×60 cm', type:'secondhand', eco:6.9, price:700, saving:590, co2:16, img:'https://www.ikea.com/us/en/images/products/lagkapten-adils-desk-white-black__0976081_pe812979_s5.jpg?f=l', badge:'Second-hand', ribbon:'Save 46%', materials:['bio','fsc']},
-      // ── Refurbished (5) ──
+      // ── Refurbished (4) — row images: E,F,G,A ──
       {name:'BEKANT', variant:'Sit/stand desk · Recalibrated & cleaned · Like new', type:'refurb', eco:6.8, price:3800, saving:2200, co2:22, img:'https://www.ikea.com/us/en/images/products/bekant-desk-white__1160561_pe888958_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 37%', materials:['recycled','recyclable']},
       {name:'LINNMON', variant:'Bamboo top · Re-edged & new legs · Like new', type:'refurb', eco:6.4, price:700, saving:300, co2:11, img:'https://www.ikea.com/us/en/images/products/linnmon-tabletop-white__1097492_pe864988_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 30%', materials:['bio']},
-      {name:'SKRUVSTA', variant:'Birch desk · Refinished & re-lacquered · Like new', type:'refurb', eco:6.1, price:1200, saving:500, co2:14, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 29%', materials:['fsc','bio']},
-      {name:'ALEX', variant:'Desk · Cleaned, new handles · Drawer liners replaced', type:'refurb', eco:5.9, price:1100, saving:395, co2:12, img:'https://www.ikea.com/us/en/images/products/lagkapten-adils-desk-white-black__0976081_pe812979_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 26%', materials:['recyclable']},
-      // ── Eco-certified new (6) ──
-      {name:'ANFALLARE', variant:'Bamboo desk · FSC certified · 140×65 cm', type:'eco', eco:9.1, price:2995, saving:0, co2:8, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc','recyclable']},
-      {name:'LINNMON', variant:'Bamboo tabletop · Sustainably harvested · 150×75 cm', type:'eco', eco:8.5, price:995, saving:0, co2:6, img:'https://www.ikea.com/us/en/images/products/linnmon-tabletop-white__1097492_pe864988_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc']},
-      {name:'IDÅSEN', variant:'Bamboo/steel desk · Low-emission · 120×70 cm', type:'eco', eco:8.0, price:4995, saving:0, co2:11, img:'https://www.ikea.com/us/en/images/products/idasen-desk-sit-stand-black-dark-gray__0734939_pe739673_s5.jpg?f=l', badge:'Eco New', materials:['bio','recyclable']},
+      {name:'IDÅSEN', variant:'Sit/stand desk · Serviced & cleaned · Like new', type:'refurb', eco:6.1, price:1600, saving:895, co2:18, img:'https://www.ikea.com/us/en/images/products/idasen-desk-sit-stand-black-dark-gray__0734939_pe739673_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 36%', materials:['recyclable']},
+      {name:'ANFALLARE', variant:'Bamboo desk · Cleaned & re-oiled · Like new', type:'refurb', eco:6.4, price:1050, saving:550, co2:14, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Refurbished', ribbon:'Save 34%', materials:['bio','fsc']},
+      // ── Eco-certified new (4) — row images: D,C,F,B ──
       {name:'LAGKAPTEN', variant:'Bamboo tabletop · FSC certified · Water-based varnish · 140×60 cm', type:'eco', eco:7.7, price:1295, saving:0, co2:7, img:'https://www.ikea.com/us/en/images/products/lagkapten-adils-desk-white-black__0976081_pe812979_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc','recyclable']},
-    ,
-      // ── Brand new (4) ──
-      {name:'BEKANT', variant:'Desk · White · 120×80 cm · Full warranty', type:'new', eco:3.8, price:2995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/bekant-desk-white__1160567_pe888964_s5.jpg?f=l', badge:'Brand new', materials:['recyclable']},
-      {name:'ANFALLARE', variant:'Desk · Bamboo · 140×65 cm · Full warranty', type:'new', eco:5.4, price:2995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Brand new', materials:['bio','fsc']},
+      {name:'ALEX', variant:'Desk with drawers · FSC wood · Low-emission board · 131×60 cm', type:'eco', eco:7.0, price:2995, saving:0, co2:8, img:'https://www.ikea.com/us/en/images/products/alex-desk-white__0977666_pe813729_s5.jpg?f=l', badge:'Eco New', materials:['fsc','recyclable']},
+      {name:'LINNMON', variant:'Bamboo tabletop · Sustainably harvested · 150×75 cm', type:'eco', eco:8.5, price:995, saving:0, co2:6, img:'https://www.ikea.com/us/en/images/products/linnmon-tabletop-white__1097492_pe864988_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc']},
+      {name:'ANFALLARE', variant:'Bamboo desk · FSC certified · 140×65 cm', type:'eco', eco:9.1, price:2995, saving:0, co2:8, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Eco New', materials:['bio','fsc','recyclable']},
+      // ── Brand new (4) — row images: G,D,A,E ──
+      {name:'IDÅSEN', variant:'Bamboo/steel sit-stand desk · Low-emission · 120×70 cm · Full warranty', type:'new', eco:5.4, price:4995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/idasen-desk-sit-stand-black-dark-gray__0734939_pe739673_s5.jpg?f=l', badge:'Brand new', materials:['bio','recyclable']},
       {name:'LAGKAPTEN', variant:'Desk · Bamboo/black · 140×60 cm · Full warranty', type:'new', eco:4.9, price:1295, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/lagkapten-adils-desk-white-black__0976081_pe812979_s5.jpg?f=l', badge:'Brand new', materials:['bio','fsc']},
-      {name:'ALEX', variant:'Desk with drawers · White · 131×60 cm · Full warranty', type:'new', eco:3.6, price:3995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/alex-desk-white__0977666_pe813729_s5.jpg?f=l', badge:'Brand new', materials:['recyclable']}
+      {name:'ANFALLARE', variant:'Desk · Bamboo · 140×65 cm · Full warranty', type:'new', eco:5.4, price:2995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/anfallare-alex-desk-bamboo-white__0976200_pe813093_s5.jpg?f=l', badge:'Brand new', materials:['bio','fsc']},
+      {name:'BEKANT', variant:'Desk · White · 120×80 cm · Full warranty', type:'new', eco:3.8, price:2995, saving:0, co2:0, img:'https://www.ikea.com/us/en/images/products/bekant-desk-white__1160561_pe888958_s5.jpg?f=l', badge:'Brand new', materials:['recyclable']}
     ]
   },
   'Chair': {
@@ -1848,7 +1849,8 @@ async function sendMsg() {
     setChips(nextChips);
 
     if (step >= 5) {
-      document.getElementById('confirmBtn').classList.add('ready');
+      const wrap = document.getElementById('confirmBtnWrap');
+      if (wrap) wrap.style.display = 'block';
       document.getElementById('confirmBtn').removeAttribute('aria-disabled');
       showMobileCta();
     }
@@ -1865,7 +1867,8 @@ async function sendMsg() {
     addMsg('bot', fallbacks[currentStep] || 'All set! Click "See full results".');
     setChips(nextChips);
     if (step >= 5) {
-      document.getElementById('confirmBtn').classList.add('ready');
+      const wrap = document.getElementById('confirmBtnWrap');
+      if (wrap) wrap.style.display = 'block';
       document.getElementById('confirmBtn').removeAttribute('aria-disabled');
       showMobileCta();
     }
@@ -1886,7 +1889,12 @@ function updateProgress() {
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressPct').textContent = `${filled} / 5`;
   document.getElementById('progressRegion').setAttribute('aria-valuenow', filled);
-  if (filled >= 3) { document.getElementById('confirmBtn').classList.add('ready'); document.getElementById('confirmBtn').removeAttribute('aria-disabled'); showMobileCta(); }
+  if (filled >= 5) {
+    const wrap = document.getElementById('confirmBtnWrap');
+    if (wrap) wrap.style.display = 'block';
+    document.getElementById('confirmBtn').removeAttribute('aria-disabled');
+    showMobileCta();
+  }
 }
 
 function setMiniCardImg(mcId, src, alt) {
@@ -2025,7 +2033,8 @@ function backToPhase1() {
   });
   document.getElementById('progressFill').style.width = '0%';
   document.getElementById('progressPct').textContent = '0 / 5';
-  document.getElementById('confirmBtn').classList.remove('ready');
+  const wrap = document.getElementById('confirmBtnWrap');
+  if (wrap) wrap.style.display = 'none';
   document.getElementById('confirmBtn').setAttribute('aria-disabled','true');
   hideMobileCta();
 
