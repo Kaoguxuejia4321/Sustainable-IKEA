@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IKEA — Find Your Sustainable Furniture</title>
+<title>IDEA — Find Your Sustainable Furniture</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 /* ── TOKENS ─────────────────────────────────── */
@@ -890,7 +890,7 @@ nav {
 
 <!-- NAV -->
 <nav role="navigation" aria-label="Main navigation">
-  <div class="nav-logo" aria-label="IKEA home">IKEA</div>
+  <div class="nav-logo" aria-label="IDEA home">IDEA</div>
   <ul class="nav-links">
     <li><a href="#">Rooms</a></li>
     <li><a href="#">Products</a></li>
@@ -939,7 +939,7 @@ nav {
       <div class="chat-messages" id="chatMessages" role="log" aria-label="Conversation history" aria-live="polite">
         <div class="msg bot" role="article" aria-label="Assistant message">
           <div class="msg-avatar" aria-hidden="true">🌿</div>
-          <div class="msg-bubble">Hi! I'm your IKEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.</div>
+          <div class="msg-bubble">Hi! I'm your IDEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.</div>
         </div>
       </div>
 
@@ -1605,7 +1605,7 @@ async function callClaude(systemPrompt, userMessage) {
 
 // System prompt for Phase 1 conversation
 function getPhase1SystemPrompt() {
-  return `You are an IKEA Sustainability Shopping Assistant. Your job is to understand what furniture the user needs through a short, friendly conversation.
+  return `You are an IDEA Sustainability Shopping Assistant. Your job is to understand what furniture the user needs through a short, friendly conversation.
 
 You need to collect 5 pieces of information, one at a time:
 1. Furniture type (sofa, dining table, bed frame, bookshelf, desk, chair, etc.)
@@ -1635,7 +1635,7 @@ Rules:
 function getPhase2SystemPrompt() {
   const cat = CATALOG[reqs.type] || CATALOG['Furniture'];
   const best = cat.products[0];
-  return `You are an IKEA product advisor helping a customer compare sustainable furniture options.
+  return `You are an IDEA product advisor helping a customer compare sustainable furniture options.
 
 The customer searched for: ${reqs.type || 'furniture'}
 Their preferences: size=${reqs.size||'any'}, style=${reqs.style||'any'}, budget=${reqs.budget||'any'}, eco priority=${reqs.eco||'any'}
@@ -2039,7 +2039,7 @@ function backToPhase1() {
   hideMobileCta();
 
   document.getElementById('chatMessages').innerHTML = '';
-  addMsg('bot', "Hi! I'm your IKEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
+  addMsg('bot', "Hi! I'm your IDEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
   const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
   const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
   const el = document.getElementById('quickChips');
