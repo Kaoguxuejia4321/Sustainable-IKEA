@@ -2796,10 +2796,17 @@ document.addEventListener('keydown', e => {
 })();
 
 
+document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navCart').onclick = openCart;
 
-  // Always use the AI chat path for Phase 1
-  document.getElementById('p1AiCol').style.display = '';
+  // Show the correct Phase 1 input column based on condition assignment
+  if (STUDY_CONDITION === 'ai') {
+    document.getElementById('p1AiCol').style.display = '';
+  } else {
+    document.getElementById('p1ControlCol').style.display = '';
+    const banner = document.getElementById('aiBanner');
+    if (banner) banner.style.display = 'none';
+  }
 
   // Load state from URL if present (shareable links)
   loadFromUrl();
