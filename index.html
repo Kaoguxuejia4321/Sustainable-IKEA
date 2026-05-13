@@ -1026,7 +1026,7 @@ nav {
             <option value="Second-hand first">Second-hand first</option>
             <option value="Refurbished first">Refurbished first</option>
             <option value="Eco-certified new">Eco-certified new</option>
-            <option value="Show all">Show all options</option>
+            <option value="Results without AI suggestions">Results without AI suggestions</option>
           </select>
         </div>
 
@@ -1518,13 +1518,18 @@ const CATALOG = {
 // ═══════════════════════════════════════════
 // CONDITION ASSIGNMENT (A/B split)
 // ═══════════════════════════════════════════
-// All participants use the AI conversational interface.
+// Conditions: 'ai'      = AI-assisted chat (Phase 1 chatbot + eco-ranked grid)
+//             'control' = standard dropdowns (Phase 1 form + price-sorted grid)
+// Assignment is random 50/50 and persisted in sessionStorage so it survives
+// page reloads within the same session but resets for new participants.
 function assignCondition() {
-  sessionStorage.setItem('study_condition', 'ai');
-  if (!sessionStorage.getItem('study_session_start')) {
+  let c = sessionStorage.getItem('study_condition');
+  if (!c) {
+    c = Math.random() < 0.5 ? 'ai' : 'control';
+    sessionStorage.setItem('study_condition', c);
     sessionStorage.setItem('study_session_start', Date.now());
   }
-  return 'ai';
+  return c;
 }
 const STUDY_CONDITION = assignCondition();
 
@@ -1567,13 +1572,14 @@ let activeMinEco     = 0;
 let activeMinPrice   = 0;
 let activeMaxPrice   = 999999;
 // Default sort: always 'eco' (AI condition)
-let activeSortVal    = 'eco';
+let activeSortVal    = STUDY_CONDITION === 'ai' ? 'eco' : 'price-asc';
 let activeMaterials  = new Set(['fsc','gots']); // default checked
 
 let aiReady          = false;
 // Track AI chat engagement for logging
 let aiChatMessageCount = 0;
 let phase2StartTime    = null;
+let noAiMode           = false; // true when user chose "Results without AI suggestions"
 
 // ═══════════════════════════════════════════
 // LIVE REGION HELPER (a11y)
@@ -1612,7 +1618,7 @@ You need to collect 5 pieces of information, one at a time:
 2. Size preference (small/compact, medium/standard, large)
 3. Style preference (Scandinavian, modern, industrial, traditional, etc.)
 4. Budget range in Swedish kronor (SEK)
-5. Sustainability priority (second-hand first, refurbished first, eco-certified new, or show all)
+5. Sustainability priority (second-hand first, refurbished first, eco-certified new, or results without AI suggestions)
 
 Current state:
 - Type: ${reqs.type || 'not yet collected'}
@@ -1787,6 +1793,7 @@ function extractFromText(text, field) {
     if (tl.includes('second')||tl.includes('used')||tl.includes('🟣')) return 'Second-hand first';
     if (tl.includes('refurb')||tl.includes('🟠')) return 'Refurbished first';
     if (tl.includes('eco')||tl.includes('cert')||tl.includes('🟢')) return 'Eco-certified new';
+    if (tl.includes('without')||tl.includes('no ai')||tl.includes('🔄')) return 'Results without AI suggestions';
     return 'Show all';
   }
   return null;
@@ -1829,7 +1836,7 @@ async function sendMsg() {
     ['Small / compact','Medium (standard)','Large / spacious'],                           // step 1 → size
     ['Scandinavian / Nordic','Modern minimal','Industrial','Traditional / classic'],       // step 2 → style
     ['Under 3,000 kr','3,000 – 8,000 kr','8,000 – 15,000 kr','No strict limit'],         // step 3 → budget
-    ['🟣 Second-hand first','🟠 Refurbished first','🟢 Eco-certified new','🔄 Show all'], // step 4 → eco
+    ['🟣 Second-hand first','🟠 Refurbished first','🟢 Eco-certified new','🔄 Results without AI suggestions'], // step 4 → eco
     []                                                                                    // step 5 → done
   ];
   const nextChips = chipSets[Math.min(step, chipSets.length - 1)] || [];
@@ -2025,7 +2032,8 @@ function backToPhase1() {
 
   step = 0;
   reqs.type = reqs.size = reqs.style = reqs.budget = reqs.eco = null;
-  activeSortVal = 'eco';
+  noAiMode = false;
+  activeSortVal = STUDY_CONDITION === 'ai' ? 'eco' : 'price-asc';
   ['type','size','style','budget','eco'].forEach(k => {
     document.getElementById('req-'+k)?.classList.remove('filled');
     const v = document.getElementById('rv-'+k);
@@ -2038,19 +2046,27 @@ function backToPhase1() {
   document.getElementById('confirmBtn').setAttribute('aria-disabled','true');
   hideMobileCta();
 
-  document.getElementById('chatMessages').innerHTML = '';
-  addMsg('bot', "Hi! I'm your IDEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
-  const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
-  const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
-  const el = document.getElementById('quickChips');
-  el.innerHTML = '';
-  initial.forEach((t,i) => {
-    const s = document.createElement('button');
-    s.className = 'qchip';
-    s.textContent = icons[i]+' '+t.charAt(0).toUpperCase()+t.slice(1);
-    s.onclick = () => quickReply(t);
-    el.appendChild(s);
-  });
+  if (STUDY_CONDITION === 'ai') {
+    document.getElementById('chatMessages').innerHTML = '';
+    addMsg('bot', "Hi! I'm your IDEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
+    const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
+    const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
+    const el = document.getElementById('quickChips');
+    el.innerHTML = '';
+    initial.forEach((t,i) => {
+      const s = document.createElement('button');
+      s.className = 'qchip';
+      s.textContent = icons[i]+' '+t.charAt(0).toUpperCase()+t.slice(1);
+      s.onclick = () => quickReply(t);
+      el.appendChild(s);
+    });
+  } else {
+    // Reset control dropdowns
+    ['ctrl-type','ctrl-size','ctrl-style','ctrl-budget','ctrl-eco'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  }
 
   document.querySelectorAll('.mini-card').forEach(c => c.classList.remove('matched'));
   document.getElementById('floatMsgs').innerHTML = '';
@@ -2077,7 +2093,7 @@ function renderPhase2(type) {
   activeMinEco     = 0;
   activeMinPrice   = 0;
   activeMaxPrice   = 999999;
-  activeSortVal    = 'eco';
+  activeSortVal    = (STUDY_CONDITION === 'ai' && !noAiMode) ? 'eco' : 'price-asc';
   activeMaterials  = new Set(['fsc','gots']);
 
   // Reset UI controls
@@ -2119,10 +2135,14 @@ function renderPhase2(type) {
       ? `<div class="vs-row"><span class="vs-lbl">vs. standard new CO₂</span><span class="vs-val vs-green">↓ –${p.co2} kg CO₂</span></div><div class="vs-row"><span class="vs-lbl">Material upgrade</span><span class="vs-val vs-green">Eco-certified</span></div>`
       : isNew
       ? `<div class="vs-row"><span class="vs-lbl">Full manufacturer guarantee</span><span class="vs-val">10 years</span></div><div class="vs-row"><span class="vs-lbl">Eco score</span><span class="vs-val" style="color:var(--ref)">${p.eco} / 10</span></div>`
+      : noAiMode
+      ? `<div class="vs-row"><span class="vs-lbl">vs. new price</span><span class="vs-val vs-save">↓ Save ${p.saving.toLocaleString()} kr</span></div></div>`
       : `<div class="vs-row"><span class="vs-lbl">vs. new price</span><span class="vs-val vs-save">↓ Save ${p.saving.toLocaleString()} kr</span></div><div class="vs-row"><span class="vs-lbl">vs. new CO₂</span><span class="vs-val vs-green">↓ –${p.co2} kg CO₂</span></div>`;
 
     const ecoTags = isNew
       ? ['Full guarantee','New stock','Ships in 3–5 days']
+      : noAiMode
+      ? []  // no eco tags in control mode
       : { secondhand:['Low carbon','Circular reuse','Extended life'], refurb:['Refurb certified','1-year warranty','Like new'], eco:['Eco-certified','Net-zero verified','FSC materials'] }[p.type];
 
     const stockRow = isSH
@@ -2155,12 +2175,12 @@ function renderPhase2(type) {
         <div class="ac-name">${p.name}</div>
         <div class="ac-variant">${p.variant}</div>
         <div class="vs-box" aria-label="Comparison vs new">${vsRows}</div>
-        <div class="eco-mini" aria-label="Eco score ${p.eco} out of 10">
+        ${noAiMode && !isNew ? '' : `<div class="eco-mini" aria-label="Eco score ${p.eco} out of 10">
           <span class="eco-mini-lbl">Eco</span>
           <div class="eco-mini-bar" aria-hidden="true"><div class="eco-mini-fill" style="width:${p.eco*10}%;background:${isEco?'var(--forest)':isRef?'var(--sage)':isNew?'var(--ref)':'var(--eco)'}"></div></div>
           <span class="eco-mini-num" style="color:${isEco?'var(--forest)':isRef?'var(--sage)':isNew?'var(--ref)':'var(--eco)'}">${p.eco}</span>
-        </div>
-        <div class="eco-tags" aria-hidden="true">${ecoTags.map(t=>`<span class="eco-tag">${t}</span>`).join('')}</div>
+        </div>`}
+        <div class="eco-tags" aria-hidden="true">${(ecoTags||[]).map(t=>`<span class="eco-tag">${t}</span>`).join('')}</div>
         ${(isEco || isNew) ? `<div class="cond-row">${condText}</div>` : `<div class="cond-row">Condition: <div class="cdots" aria-hidden="true">${condDots(condLevel)}</div> ${condText}</div>`}
         <div class="ac-price-row">
           ${priceRow}
@@ -2194,15 +2214,23 @@ function renderPhase2(type) {
   // Eco priority → sets activeTabFilter so preferred type scores higher and floats up
   if (reqs.eco) {
     const ecoMap = {
-      'Second-hand first': 'secondhand',
-      'Refurbished first': 'refurb',
-      'Eco-certified new': 'eco',
-      'Show all': 'all'
+      'Second-hand first':               'secondhand',
+      'Refurbished first':               'refurb',
+      'Eco-certified new':               'eco',
+      'Results without AI suggestions':  'all'  // control-mode override
     };
     const preTab = ecoMap[reqs.eco];
+
+    // ── "Results without AI suggestions" → switch to control mode ──
+    if (reqs.eco === 'Results without AI suggestions') {
+      noAiMode = true;
+      activeSortVal = 'price-asc'; // neutral sort, no eco boosting
+      // Record this session as control-group data from this point forward
+      try { sessionStorage.setItem('study_condition_override', 'control'); } catch(e) {}
+    }
+
     if (preTab && preTab !== 'all') {
       activeTabFilter = preTab;
-      // Highlight the matching tab button (purely visual, does not hide others)
       const tabs = document.querySelectorAll('.alt-tab');
       tabs.forEach(t => { t.className = 'alt-tab'; t.setAttribute('aria-selected','false'); });
       const tabIndex = { secondhand:1, refurb:2, eco:3 };
@@ -2538,7 +2566,7 @@ async function recordOrderStats() {
 
     // Per-condition aggregates
     stats.byCondition = stats.byCondition || { ai:{ orders:0, sustainableCount:0, totalItems:0 }, control:{ orders:0, sustainableCount:0, totalItems:0 } };
-    const cond = STUDY_CONDITION;
+    const cond = noAiMode ? 'control' : STUDY_CONDITION;
     stats.byCondition[cond] = stats.byCondition[cond] || { orders:0, sustainableCount:0, totalItems:0 };
     stats.byCondition[cond].orders         += 1;
     stats.byCondition[cond].sustainableCount += sustainableCount;
@@ -2548,7 +2576,7 @@ async function recordOrderStats() {
     const sessionDurationSec = phase2StartTime ? Math.round((Date.now() - phase2StartTime) / 1000) : null;
     const record = {
       ts:            Date.now(),
-      condition:     STUDY_CONDITION,                          // 'ai' | 'control'
+      condition:     noAiMode ? 'control' : STUDY_CONDITION,
       // Product choices (the core dependent variable)
       items:         cartItems.length,
       sustainableCount,
