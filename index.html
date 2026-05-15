@@ -633,7 +633,8 @@ nav {
 .alt-tab:focus { outline:2px solid var(--forest); outline-offset:2px; }
 
 /* Alt grid */
-.alt-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; }
+.alt-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:14px; }
+.alt-card { min-width: 0; }
 .alt-card { background:white; border-radius:10px; border:1.5px solid var(--border); overflow:hidden; cursor:pointer; transition:all 0.22s; position:relative; }
 .alt-card:hover { border-color:transparent; box-shadow:0 8px 28px rgba(0,0,0,0.11); transform:translateY(-3px); }
 .alt-card:focus-within { outline:2px solid var(--forest); outline-offset:2px; }
@@ -1516,20 +1517,18 @@ const CATALOG = {
 };
 
 // ═══════════════════════════════════════════
-// CONDITION ASSIGNMENT (A/B split)
+// CONDITION ASSIGNMENT
 // ═══════════════════════════════════════════
-// Conditions: 'ai'      = AI-assisted chat (Phase 1 chatbot + eco-ranked grid)
-//             'control' = standard dropdowns (Phase 1 form + price-sorted grid)
-// Assignment is random 50/50 and persisted in sessionStorage so it survives
-// page reloads within the same session but resets for new participants.
+// All participants see the AI chatbox on the homepage.
+// The control condition is self-selected at step 4 when the participant
+// chooses "Results without AI suggestions" — this sets noAiMode = true
+// and records the session as 'control' in the stats.
 function assignCondition() {
-  let c = sessionStorage.getItem('study_condition');
-  if (!c) {
-    c = Math.random() < 0.5 ? 'ai' : 'control';
-    sessionStorage.setItem('study_condition', c);
+  sessionStorage.setItem('study_condition', 'ai');
+  if (!sessionStorage.getItem('study_session_start')) {
     sessionStorage.setItem('study_session_start', Date.now());
   }
-  return c;
+  return 'ai';
 }
 const STUDY_CONDITION = assignCondition();
 
@@ -2010,7 +2009,7 @@ function goToPhase2() {
     p2.classList.add('visible');
     document.getElementById('floatWrap').style.display = 'flex';
     window.scrollTo(0, 0);
-    announce('Results page loaded. Found ' + (CATALOG[resolvedType]?.products.length || 9) + ' sustainable alternatives.');
+    announce('Results page loaded. Found ' + (CATALOG[resolvedType]?.products.length || 9) + ' options.');
     setTimeout(initCO2Observer, 100);
     updateShareUrl();
 
@@ -2046,27 +2045,19 @@ function backToPhase1() {
   document.getElementById('confirmBtn').setAttribute('aria-disabled','true');
   hideMobileCta();
 
-  if (STUDY_CONDITION === 'ai') {
-    document.getElementById('chatMessages').innerHTML = '';
-    addMsg('bot', "Hi! I'm your IDEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
-    const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
-    const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
-    const el = document.getElementById('quickChips');
-    el.innerHTML = '';
-    initial.forEach((t,i) => {
-      const s = document.createElement('button');
-      s.className = 'qchip';
-      s.textContent = icons[i]+' '+t.charAt(0).toUpperCase()+t.slice(1);
-      s.onclick = () => quickReply(t);
-      el.appendChild(s);
-    });
-  } else {
-    // Reset control dropdowns
-    ['ctrl-type','ctrl-size','ctrl-style','ctrl-budget','ctrl-eco'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-  }
+  document.getElementById('chatMessages').innerHTML = '';
+  addMsg('bot', "Hi! I'm your IDEA Sustainability Assistant.<br><br>What type of furniture are you looking for? Describe it in your own words — a sofa, dining table, bed frame, bookshelf, anything.");
+  const initial = ['sofa','dining table','bed frame','bookshelf','desk','chair'];
+  const icons   = ['🛋️','🍽️','🛏️','📚','🖥️','💺'];
+  const el = document.getElementById('quickChips');
+  el.innerHTML = '';
+  initial.forEach((t,i) => {
+    const s = document.createElement('button');
+    s.className = 'qchip';
+    s.textContent = icons[i]+' '+t.charAt(0).toUpperCase()+t.slice(1);
+    s.onclick = () => quickReply(t);
+    el.appendChild(s);
+  });
 
   document.querySelectorAll('.mini-card').forEach(c => c.classList.remove('matched'));
   document.getElementById('floatMsgs').innerHTML = '';
@@ -2086,6 +2077,9 @@ function condDots(n) {
 
 function renderPhase2(type) {
   const cat = CATALOG[type] || CATALOG['Furniture'];
+
+  // ── Detect control mode immediately so card rendering uses the correct flag ──
+  noAiMode = (reqs.eco === 'Results without AI suggestions');
 
   // Reset state to clean defaults
   activeTypeFilter = 'all';
@@ -2164,7 +2158,19 @@ function renderPhase2(type) {
     card.dataset.co2     = p.co2;
     card.dataset.materials = (p.materials || []).join(',');
 
-    card.innerHTML = `
+    card.innerHTML = noAiMode ? `
+      <div class="ac-img" aria-hidden="true">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+      </div>
+      <div class="ac-body">
+        <div class="ac-name">${p.name}</div>
+        <div class="ac-variant">${p.variant}</div>
+        <div class="ac-price-row" style="margin-top:auto">
+          <div><span class="ac-price">${p.price.toLocaleString()} kr</span></div>
+          <button class="ac-add" onclick="addCart('${p.name}',${p.price},'${p.badge}','${p.img}');event.stopPropagation()" aria-label="Add ${p.name} to cart">+</button>
+        </div>
+        ${stockRow}
+      </div>` : `
       ${p.bestPick ? '<div class="best-bar" aria-label="Best value pick">💚 Best value · Lowest carbon</div>' : ''}
       <div class="ac-img" aria-hidden="true">
         <img src="${p.img}" alt="${p.name}" loading="lazy">
@@ -2175,11 +2181,11 @@ function renderPhase2(type) {
         <div class="ac-name">${p.name}</div>
         <div class="ac-variant">${p.variant}</div>
         <div class="vs-box" aria-label="Comparison vs new">${vsRows}</div>
-        ${noAiMode && !isNew ? '' : `<div class="eco-mini" aria-label="Eco score ${p.eco} out of 10">
+        <div class="eco-mini" aria-label="Eco score ${p.eco} out of 10">
           <span class="eco-mini-lbl">Eco</span>
           <div class="eco-mini-bar" aria-hidden="true"><div class="eco-mini-fill" style="width:${p.eco*10}%;background:${isEco?'var(--forest)':isRef?'var(--sage)':isNew?'var(--ref)':'var(--eco)'}"></div></div>
           <span class="eco-mini-num" style="color:${isEco?'var(--forest)':isRef?'var(--sage)':isNew?'var(--ref)':'var(--eco)'}">${p.eco}</span>
-        </div>`}
+        </div>
         <div class="eco-tags" aria-hidden="true">${(ecoTags||[]).map(t=>`<span class="eco-tag">${t}</span>`).join('')}</div>
         ${(isEco || isNew) ? `<div class="cond-row">${condText}</div>` : `<div class="cond-row">Condition: <div class="cdots" aria-hidden="true">${condDots(condLevel)}</div> ${condText}</div>`}
         <div class="ac-price-row">
@@ -2851,14 +2857,8 @@ document.addEventListener('keydown', e => {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('navCart').onclick = openCart;
 
-  // Show the correct Phase 1 input column based on condition assignment
-  if (STUDY_CONDITION === 'ai') {
-    document.getElementById('p1AiCol').style.display = '';
-  } else {
-    document.getElementById('p1ControlCol').style.display = '';
-    const banner = document.getElementById('aiBanner');
-    if (banner) banner.style.display = 'none';
-  }
+  // Always show the AI chat column — all participants start with the chatbox
+  document.getElementById('p1AiCol').style.display = '';
 
   // Load state from URL if present (shareable links)
   loadFromUrl();
